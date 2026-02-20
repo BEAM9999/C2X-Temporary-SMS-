@@ -1115,6 +1115,17 @@
             to { opacity: 0; transform: translateY(20px); }
         }
 
+        @keyframes count-flash-anim {
+            0% { transform: scale(1); color: inherit; }
+            30% { transform: scale(1.3); color: var(--accent); }
+            100% { transform: scale(1); color: inherit; }
+        }
+
+        .count-flash {
+            display: inline-block;
+            animation: count-flash-anim 0.4s ease;
+        }
+
         /* ============ RESPONSIVE ============ */
         @media (max-width: 900px) {
             .main {
@@ -1125,7 +1136,7 @@
             }
 
             .panel {
-                max-height: 50vh;
+                max-height: none;
             }
 
             .header-inner {
@@ -1546,6 +1557,7 @@
         // ==================== STATE ====================
         let allNumbers = [];
         let filteredNumbers = [];
+        let displayedNumbers = [];
         let selectedNumber = null;
         let autoRefreshInterval = null;
         let autoMsgRefreshInterval = null;
@@ -2316,6 +2328,7 @@
         }
 
         function renderNumbers(numbers) {
+            displayedNumbers = numbers;
             const container = document.getElementById('numbersList');
 
             if (!numbers || numbers.length === 0) {
@@ -2400,7 +2413,7 @@
 
         // ==================== MESSAGES ====================
         async function selectNumber(idx) {
-            const num = filteredNumbers[idx];
+            const num = displayedNumbers[idx];
             if (!num) return;
 
             selectedNumber = num;
@@ -2610,6 +2623,15 @@
                 clearTimeout(debounce);
                 debounce = setTimeout(applySearchFilter, 200);
             });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    clearTimeout(debounce);
+                    applySearchFilter();
+                    input.blur();
+                    const numsList = document.getElementById('numbersList');
+                    if (numsList) numsList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
         }
 
         function applySearchFilter() {
@@ -2634,7 +2656,11 @@
             }
 
             renderNumbers(results);
-            document.getElementById('numberCount').textContent = results.length;
+            const countEl = document.getElementById('numberCount');
+            countEl.textContent = results.length;
+            countEl.classList.remove('count-flash');
+            void countEl.offsetWidth;
+            countEl.classList.add('count-flash');
         }
 
         // ==================== AUTO REFRESH ====================
