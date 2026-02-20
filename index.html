@@ -1126,17 +1126,156 @@
             animation: count-flash-anim 0.4s ease;
         }
 
+        /* ============ SMS FAB (Mobile) ============ */
+        .sms-fab {
+            display: none;
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            border: none;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 24px rgba(0, 212, 255, 0.35), 0 0 0 3px rgba(0, 212, 255, 0.1);
+            z-index: 999;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .sms-fab:active {
+            transform: scale(0.9);
+        }
+
+        .sms-fab .sprite-icon {
+            width: 30px;
+            height: 30px;
+            filter: brightness(2);
+            transform: none;
+        }
+
+        .sms-fab-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            min-width: 22px;
+            height: 22px;
+            background: var(--red);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .sms-back-btn {
+            display: none;
+        }
+
+        @keyframes sms-slide-up {
+            from { transform: translateY(100%); opacity: 0.5; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes sms-slide-down {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(100%); opacity: 0.5; }
+        }
+
         /* ============ RESPONSIVE ============ */
         @media (max-width: 900px) {
             .main {
                 grid-template-columns: 1fr;
-                padding: 12px 12px 30px;
-                height: auto;
-                min-height: 0;
+                padding: 12px 12px 12px;
+                height: calc(100vh - 170px);
+                min-height: 280px;
             }
 
             .panel {
-                max-height: none;
+                max-height: 100%;
+                height: 100%;
+            }
+
+            /* Hide messages panel in grid flow on mobile */
+            .messages-panel {
+                display: none !important;
+            }
+
+            /* SMS overlay when opened */
+            .messages-panel.sms-open {
+                display: flex !important;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 1000;
+                background: var(--bg-primary);
+                border: none;
+                border-radius: 0;
+                max-height: 100vh;
+                max-height: 100dvh;
+                animation: sms-slide-up 0.3s ease forwards;
+            }
+
+            .messages-panel.sms-closing {
+                display: flex !important;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 1000;
+                background: var(--bg-primary);
+                border: none;
+                border-radius: 0;
+                animation: sms-slide-down 0.3s ease forwards;
+            }
+
+            /* Show back button in overlay */
+            .messages-panel.sms-open .sms-back-btn,
+            .messages-panel.sms-closing .sms-back-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                background: transparent;
+                border: 1px solid var(--border);
+                color: var(--text-primary);
+                cursor: pointer;
+                padding: 6px 14px;
+                border-radius: var(--radius-xs);
+                font-family: inherit;
+                font-size: 13px;
+                font-weight: 500;
+                margin-right: 10px;
+                transition: background 0.2s;
+            }
+
+            .messages-panel.sms-open .sms-back-btn:active {
+                background: rgba(255,255,255,0.08);
+            }
+
+            .messages-panel.sms-open .sms-back-btn .sprite-icon {
+                width: 18px;
+                height: 18px;
+                transform: none;
+            }
+
+            /* Add bottom padding for FAB clearance */
+            .numbers-list {
+                padding-bottom: 80px;
+            }
+
+            /* Show FAB */
+            .sms-fab {
+                display: flex;
             }
 
             .header-inner {
@@ -1256,8 +1395,11 @@
         </div>
 
         <!-- MESSAGES PANEL -->
-        <div class="panel messages-panel">
+        <div class="panel messages-panel" id="messagesPanel">
             <div class="panel-header">
+                <button class="sms-back-btn" onclick="closeSmsPanel()">
+                    <span class="sprite-icon ico-back"></span> ย้อนกลับ
+                </button>
                 <div class="panel-title">
                     <span class="sprite-icon ico-search"></span> ข้อความ SMS
                     <span class="panel-count" id="msgCount">0</span>
@@ -1293,6 +1435,12 @@
             <!-- Populated by JS -->
         </div>
     </div>
+
+    <!-- SMS FAB (Mobile only) -->
+    <button class="sms-fab" id="smsFab" onclick="openSmsPanel()">
+        <span class="sprite-icon ico-search"></span>
+        <span class="sms-fab-badge" id="smsFabBadge" style="display:none;">0</span>
+    </button>
 
     <!-- TOAST CONTAINER -->
     <div class="toast-container" id="toastContainer"></div>
@@ -2432,6 +2580,9 @@
             document.getElementById('selectedSource').textContent = num.source;
             document.getElementById('refreshMsgBtn').style.display = 'inline-flex';
 
+            // On mobile, open SMS overlay automatically
+            if (window.innerWidth <= 900) openSmsPanel();
+
             await loadMessages(num);
 
             if (autoMsgRefreshInterval) clearInterval(autoMsgRefreshInterval);
@@ -2453,6 +2604,7 @@
             if (messages && messages.length > 0) {
                 renderMessages(messages);
                 document.getElementById('msgCount').textContent = messages.length;
+                updateSmsFabBadge(messages.length);
             } else {
                 container.innerHTML = `
                     <div class="empty-state">
@@ -2464,6 +2616,7 @@
                         </button>
                     </div>`;
                 document.getElementById('msgCount').textContent = '0';
+                updateSmsFabBadge(0);
             }
         }
 
@@ -2802,6 +2955,40 @@
             const now = new Date();
             const timeStr = now.toLocaleTimeString('th-TH');
             document.getElementById('lastUpdate').textContent = `\u0E2D\u0E31\u0E1B\u0E40\u0E14\u0E15\u0E25\u0E48\u0E32\u0E2A\u0E38\u0E14: ${timeStr}`;
+        }
+
+        // ==================== SMS OVERLAY (Mobile) ====================
+        function openSmsPanel() {
+            const panel = document.getElementById('messagesPanel');
+            if (!panel || panel.classList.contains('sms-open')) return;
+            panel.classList.remove('sms-closing');
+            panel.classList.add('sms-open');
+            const fab = document.getElementById('smsFab');
+            if (fab) fab.style.display = 'none';
+        }
+
+        function closeSmsPanel() {
+            const panel = document.getElementById('messagesPanel');
+            if (!panel) return;
+            panel.classList.remove('sms-open');
+            panel.classList.add('sms-closing');
+            panel.addEventListener('animationend', function handler() {
+                panel.classList.remove('sms-closing');
+                const fab = document.getElementById('smsFab');
+                if (fab && window.innerWidth <= 900) fab.style.display = 'flex';
+                panel.removeEventListener('animationend', handler);
+            });
+        }
+
+        function updateSmsFabBadge(count) {
+            const badge = document.getElementById('smsFabBadge');
+            if (!badge) return;
+            if (count > 0) {
+                badge.textContent = count > 99 ? '99+' : count;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
         }
 
         function showToast(message, type = 'info') {
