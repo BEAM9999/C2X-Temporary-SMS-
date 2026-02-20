@@ -5,7 +5,7 @@
     <link rel="shortcut icon" type="image/png" href="favicon-96x96.png?v=2">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📱 C2Xเบอร์โทรชั่วคราว - Temp SMS</title>
+    <title>💬 C2Xเบอร์โทรชั่วคราว - Temp SMS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -130,6 +130,18 @@
 
                 --copy-btn-padding: 10px;    /* padding รอบปุ่มคัดลอก */
                 --star-btn-padding: 0px;    /* padding รอบปุ่มดาว */
+
+            /* ==================== ปรับไอคอนปุ่มย้อนกลับ SMS ==================== */
+            --sms-back-icon-size: 80px;      /* ขนาดไอคอนย้อนกลับ */
+            --sms-back-icon-offset-x: -20px;   /* ขยับไอคอนซ้ายขวา (บวก=ขวา, ลบ=ซ้าย) */
+            --sms-back-icon-offset-y: 0px;   /* ขยับไอคอนขึ้นลง (บวก=ลง, ลบ=ขึ้น) */
+
+            /* ==================== ปรับไอคอนปุ่มลอย SMS (FAB) ==================== */
+            --fab-icon-size: 70px;       /* ขนาดไอคอนปุ่มลอย */
+            --fab-icon-offset-x: -4px;    /* ขยับไอคอนซ้ายขวา (บวก=ขวา, ลบ=ซ้าย) */
+            --fab-icon-offset-y: 0px;    /* ขยับไอคอนขึ้นลง (บวก=ลง, ลบ=ขึ้น) */
+            --fab-icon-scale-x: 1;       /* ยืด/หดไอคอนแนวนอน (1 = ปกติ) */
+            --fab-icon-scale-y: 1;       /* ยืด/หดไอคอนแนวตั้ง (1 = ปกติ) */
         }
 
         * {
@@ -633,6 +645,11 @@
             background: rgba(0, 212, 255, 0.08);
             border-color: var(--border-active);
             box-shadow: 0 0 20px rgba(0, 212, 255, 0.05);
+        }
+
+        .number-card.pin-reorder-anim {
+            transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: transform;
         }
 
         .number-flag {
@@ -1150,10 +1167,11 @@
         }
 
         .sms-fab .sprite-icon {
-            width: 30px;
-            height: 30px;
+            width: var(--fab-icon-size);
+            height: var(--fab-icon-size);
             filter: brightness(2);
-            transform: none;
+            transform: translate(var(--fab-icon-offset-x), var(--fab-icon-offset-y)) scaleX(var(--fab-icon-scale-x)) scaleY(var(--fab-icon-scale-y));
+            transform-origin: center;
         }
 
         .sms-fab-badge {
@@ -1177,6 +1195,17 @@
 
         .sms-back-btn {
             display: none;
+        }
+
+        .sms-back-btn img {
+            display: block;
+            width: calc(var(--sms-back-icon-size) * 2);
+            height: var(--sms-back-icon-size);
+            object-fit: contain;
+            max-width: none;
+            clip-path: inset(0 50% 0 0);
+            transform: translate(var(--sms-back-icon-offset-x), var(--sms-back-icon-offset-y));
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
 
         @keyframes sms-slide-up {
@@ -1208,6 +1237,18 @@
                 display: none !important;
             }
 
+            /* ล็อก scroll หน้าหลักเมื่อ SMS overlay เปิด */
+            body.sms-overlay-open {
+                overflow: hidden !important;
+            }
+
+            /* ซ่อน header/status bar หลัก เพื่อไม่ให้ทับ overlay */
+            body.sms-overlay-open .header,
+            body.sms-overlay-open .status-bar,
+            body.sms-overlay-open .fallback-section {
+                display: none !important;
+            }
+
             /* SMS overlay when opened */
             .messages-panel.sms-open {
                 display: flex !important;
@@ -1216,12 +1257,16 @@
                 left: 0;
                 right: 0;
                 bottom: 0;
-                z-index: 1000;
-                background: var(--bg-primary);
+                z-index: 2000;
+                background: var(--bg-primary) !important;
                 border: none;
                 border-radius: 0;
                 max-height: 100vh;
                 max-height: 100dvh;
+                height: 100vh;
+                height: 100dvh;
+                overflow: hidden;
+                isolation: isolate;
                 animation: sms-slide-up 0.3s ease forwards;
             }
 
@@ -1232,40 +1277,98 @@
                 left: 0;
                 right: 0;
                 bottom: 0;
-                z-index: 1000;
-                background: var(--bg-primary);
+                z-index: 2000;
+                background: var(--bg-primary) !important;
                 border: none;
                 border-radius: 0;
+                height: 100vh;
+                height: 100dvh;
+                overflow: hidden;
+                isolation: isolate;
                 animation: sms-slide-down 0.3s ease forwards;
             }
 
-            /* Show back button in overlay */
+            /* header ของ overlay ทึบสนิท */
+            .messages-panel.sms-open .panel-header,
+            .messages-panel.sms-closing .panel-header {
+                background: var(--bg-primary);
+                position: relative;
+                z-index: 10;
+                flex-shrink: 0;
+                border-bottom: 1px solid var(--border);
+                padding: 10px 10px;
+                gap: 8px;
+            }
+
+            /* แสดงปุ่มย้อนกลับใน overlay */
             .messages-panel.sms-open .sms-back-btn,
             .messages-panel.sms-closing .sms-back-btn {
                 display: inline-flex;
                 align-items: center;
-                gap: 6px;
+                justify-content: center;
+                gap: 0;
                 background: transparent;
-                border: 1px solid var(--border);
+                border: none;
                 color: var(--text-primary);
                 cursor: pointer;
-                padding: 6px 14px;
-                border-radius: var(--radius-xs);
+                padding: 0;
+                border-radius: 0;
                 font-family: inherit;
                 font-size: 13px;
                 font-weight: 500;
-                margin-right: 10px;
+                margin-right: 6px;
                 transition: background 0.2s;
+                flex-shrink: 0;
+                overflow: visible;
+                line-height: 0;
             }
 
             .messages-panel.sms-open .sms-back-btn:active {
-                background: rgba(255,255,255,0.08);
+                transform: scale(0.95);
             }
 
-            .messages-panel.sms-open .sms-back-btn .sprite-icon {
-                width: 18px;
-                height: 18px;
+            .messages-panel.sms-open .panel-title,
+            .messages-panel.sms-closing .panel-title {
+                gap: 6px;
+                font-size: 14px;
+                flex: 1;
+                min-width: 0;
+            }
+
+            .messages-panel.sms-open .panel-title .sprite-icon,
+            .messages-panel.sms-closing .panel-title .sprite-icon {
+                width: 26px;
+                height: 26px;
                 transform: none;
+            }
+
+            .messages-panel.sms-open .panel-count,
+            .messages-panel.sms-closing .panel-count {
+                font-size: 10px;
+                padding: 2px 6px;
+            }
+
+            .messages-panel.sms-open #refreshMsgBtn,
+            .messages-panel.sms-closing #refreshMsgBtn {
+                padding: 6px 10px;
+                gap: 4px;
+                font-size: 12px;
+                flex-shrink: 0;
+            }
+
+            .messages-panel.sms-open #refreshMsgBtn .sprite-icon.ico-refresh,
+            .messages-panel.sms-closing #refreshMsgBtn .sprite-icon.ico-refresh {
+                width: 22px;
+                height: 22px;
+                transform: none;
+            }
+
+            /* messages-list ใน overlay เลื่อนได้ */
+            .messages-panel.sms-open .messages-list,
+            .messages-panel.sms-closing .messages-list {
+                flex: 1;
+                overflow-y: auto;
+                min-height: 0;
             }
 
             /* Add bottom padding for FAB clearance */
@@ -1397,8 +1500,8 @@
         <!-- MESSAGES PANEL -->
         <div class="panel messages-panel" id="messagesPanel">
             <div class="panel-header">
-                <button class="sms-back-btn" onclick="closeSmsPanel()">
-                    <span class="sprite-icon ico-back"></span> ย้อนกลับ
+                <button class="sms-back-btn" onclick="closeSmsPanel()" aria-label="ย้อนกลับ" title="ย้อนกลับ">
+                    <img src="icon1.png" alt="ย้อนกลับ">
                 </button>
                 <div class="panel-title">
                     <span class="sprite-icon ico-search"></span> ข้อความ SMS
@@ -1706,7 +1809,9 @@
         let allNumbers = [];
         let filteredNumbers = [];
         let displayedNumbers = [];
+        let lastDisplayOrderIds = [];
         let selectedNumber = null;
+        let messageLoadToken = 0;
         let autoRefreshInterval = null;
         let autoMsgRefreshInterval = null;
         let isAutoRefresh = false;
@@ -2136,6 +2241,14 @@
             const mutationObserver = new MutationObserver(updateArrows);
             mutationObserver.observe(container, { childList: true, subtree: false });
 
+            container.addEventListener('wheel', (event) => {
+                const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+                if (delta === 0) return;
+                event.preventDefault();
+                container.scrollLeft += delta;
+                updateArrows();
+            }, { passive: false });
+
             updateArrows();
             requestAnimationFrame(updateArrows);
             setTimeout(updateArrows, 50);
@@ -2480,6 +2593,7 @@
             const container = document.getElementById('numbersList');
 
             if (!numbers || numbers.length === 0) {
+                lastDisplayOrderIds = [];
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="icon">\uD83D\uDCF5</div>
@@ -2489,20 +2603,38 @@
                 return;
             }
 
+            const originalIndexMap = new Map(numbers.map((item, index) => [item.id, index]));
+            const previousOrderMap = new Map(lastDisplayOrderIds.map((id, index) => [id, index]));
+
             const sorted = [...numbers].sort((a, b) => {
                 const pa = pinnedNumbers.has(a.id) ? 1 : 0;
                 const pb = pinnedNumbers.has(b.id) ? 1 : 0;
-                return pb - pa;
+                if (pb !== pa) return pb - pa;
+
+                const aPrev = previousOrderMap.get(a.id);
+                const bPrev = previousOrderMap.get(b.id);
+
+                if (typeof aPrev === 'number' && typeof bPrev === 'number') {
+                    return aPrev - bPrev;
+                }
+
+                if (typeof aPrev === 'number') return -1;
+                if (typeof bPrev === 'number') return 1;
+
+                return (originalIndexMap.get(a.id) ?? 0) - (originalIndexMap.get(b.id) ?? 0);
             });
+
+            lastDisplayOrderIds = sorted.map(item => item.id);
 
             container.innerHTML = sorted.map((num, idx) => {
                 const isPinned = pinnedNumbers.has(num.id);
+                const originalIdx = originalIndexMap.get(num.id) ?? 0;
                 const flagHtml = num.flag_img
                     ? `<img class="number-flag" src="${num.flag_img}" alt="${num.code}" loading="lazy">`
                     : `<div class="number-flag-emoji">${num.flag}</div>`;
                 return `
                 <div class="number-card ${selectedNumber?.id === num.id ? 'active' : ''} ${isPinned ? 'pinned-card' : ''}"
-                     onclick="selectNumber(${numbers.indexOf(num)})" data-idx="${numbers.indexOf(num)}">
+                     onclick="selectNumber(${originalIdx})" data-idx="${originalIdx}" data-id="${num.id}">
                     ${flagHtml}
                     <div class="number-info">
                         <div class="number-phone">${formatPhone(num.number)}</div>
@@ -2579,6 +2711,8 @@
             document.getElementById('selectedPhone').textContent = formatPhone(num.number);
             document.getElementById('selectedSource').textContent = num.source;
             document.getElementById('refreshMsgBtn').style.display = 'inline-flex';
+            document.getElementById('msgCount').textContent = '...';
+            updateSmsFabBadge(0);
 
             // On mobile, open SMS overlay automatically
             if (window.innerWidth <= 900) openSmsPanel();
@@ -2592,6 +2726,7 @@
         }
 
         async function loadMessages(num) {
+            const token = ++messageLoadToken;
             const container = document.getElementById('messagesList');
             container.innerHTML = `
                 <div class="empty-state">
@@ -2600,6 +2735,10 @@
                 </div>`;
 
             const messages = await scrapeMessagesFromUrl(num.msg_url);
+
+            if (token !== messageLoadToken || !selectedNumber || selectedNumber.id !== num.id) {
+                return;
+            }
 
             if (messages && messages.length > 0) {
                 renderMessages(messages);
@@ -2683,9 +2822,26 @@
             }
         }
 
+        function centerCountryChip(element) {
+            const container = document.getElementById('countryFilter');
+            if (!container || !element) return;
+
+            const targetLeft = element.offsetLeft - (container.clientWidth - element.offsetWidth) / 2;
+            const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth);
+            const clampedLeft = Math.max(0, Math.min(maxScroll, targetLeft));
+
+            container.scrollTo({ left: clampedLeft, behavior: 'smooth' });
+
+            if (typeof window.updateCountryFilterArrows === 'function') {
+                requestAnimationFrame(window.updateCountryFilterArrows);
+                setTimeout(window.updateCountryFilterArrows, 220);
+            }
+        }
+
         function filterCountry(code, element) {
             document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
             element.classList.add('active');
+            centerCountryChip(element);
 
             if (code === 'all') {
                 filteredNumbers = [...allNumbers];
@@ -2875,15 +3031,25 @@
 
         // ==================== CACHE ====================
         async function clearCache() {
+            const pinnedSnapshot = [...pinnedNumbers];
+            const pinnedEntries = allNumbers.filter(n => pinnedNumbers.has(n.id));
             clearNumbersStorage();
             numberCache.data = null;
             numberCache.time = 0;
             Object.keys(msgCache).forEach(k => delete msgCache[k]);
-            allNumbers = [];
-            filteredNumbers = [];
-            renderNumbers([]);
+            allNumbers = [...pinnedEntries];
+            pinnedNumbers = new Set(pinnedSnapshot);
+            savePinnedNumbers();
+            numberCache.data = [...allNumbers];
+            numberCache.time = Date.now();
+            saveNumbersToStorage(allNumbers);
+
+            const curFilter = document.querySelector('.filter-chip.active')?.dataset?.country || 'all';
+            filteredNumbers = curFilter === 'all' ? [...allNumbers] : allNumbers.filter(n => n.code === curFilter);
+            renderNumbers(filteredNumbers);
+            applySearchFilter();
             updateCountryFilter();
-            document.getElementById('numberCount').textContent = '0';
+            document.getElementById('numberCount').textContent = filteredNumbers.length;
             showToast('\uD83D\uDDD1\uFE0F \u0E25\u0E49\u0E32\u0E07\u0E41\u0E04\u0E0A\u0E41\u0E25\u0E30\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E17\u0E35\u0E48\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E44\u0E27\u0E49\u0E41\u0E25\u0E49\u0E27', 'success');
             setStatus('offline', '\u0E25\u0E49\u0E32\u0E07\u0E41\u0E04\u0E0A\u0E41\u0E25\u0E49\u0E27 \u0E01\u0E14\u0E23\u0E35\u0E40\u0E1F\u0E23\u0E0A\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E42\u0E2B\u0E25\u0E14\u0E43\u0E2B\u0E21\u0E48');
         }
@@ -2921,16 +3087,89 @@
             });
         }
 
+        function animatePinReorder(updateFn, focusId) {
+            const container = document.getElementById('numbersList');
+            if (!container) {
+                updateFn();
+                return;
+            }
+
+            const beforeCards = Array.from(container.querySelectorAll('.number-card[data-id]'));
+            const CAPTURE_LIMIT = 120;
+            const beforeScopeCards = beforeCards.filter((card, index) => {
+                const id = card.getAttribute('data-id');
+                return index < CAPTURE_LIMIT || id === focusId;
+            });
+
+            const beforeRects = new Map();
+            beforeScopeCards.forEach(card => {
+                const id = card.getAttribute('data-id');
+                if (id) beforeRects.set(id, card.getBoundingClientRect());
+            });
+
+            updateFn();
+
+            const afterCards = Array.from(container.querySelectorAll('.number-card[data-id]'));
+            const afterScopeCards = afterCards.filter((card, index) => {
+                const id = card.getAttribute('data-id');
+                return index < CAPTURE_LIMIT || id === focusId;
+            });
+
+            afterScopeCards.forEach(card => {
+                const id = card.getAttribute('data-id');
+                if (!id) return;
+                const before = beforeRects.get(id);
+                if (!before) return;
+
+                const after = card.getBoundingClientRect();
+                const deltaX = before.left - after.left;
+                const deltaY = before.top - after.top;
+
+                if (Math.abs(deltaX) < 0.5 && Math.abs(deltaY) < 0.5) return;
+
+                if (typeof card.animate === 'function') {
+                    card.animate(
+                        [
+                            { transform: `translate(${deltaX}px, ${deltaY}px)` },
+                            { transform: 'translate(0, 0)' }
+                        ],
+                        {
+                            duration: 620,
+                            easing: 'cubic-bezier(0.22, 1, 0.36, 1)'
+                        }
+                    );
+                } else {
+                    card.classList.add('pin-reorder-anim');
+                    card.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+
+                    requestAnimationFrame(() => {
+                        card.style.transform = 'translate(0, 0)';
+                    });
+
+                    card.addEventListener('transitionend', function handler(event) {
+                        if (event.propertyName !== 'transform') return;
+                        card.classList.remove('pin-reorder-anim');
+                        card.style.transform = '';
+                        card.removeEventListener('transitionend', handler);
+                    });
+                }
+            });
+        }
+
         function togglePin(event, numId) {
             event.stopPropagation();
             const wasPinned = pinnedNumbers.has(numId);
-            if (wasPinned) {
-                pinnedNumbers.delete(numId);
-            } else {
-                pinnedNumbers.add(numId);
-            }
-            savePinnedNumbers();
-            applySearchFilter();
+
+            animatePinReorder(() => {
+                if (wasPinned) {
+                    pinnedNumbers.delete(numId);
+                } else {
+                    pinnedNumbers.add(numId);
+                }
+                savePinnedNumbers();
+                applySearchFilter();
+            }, numId);
+
             showToast(!wasPinned ? '\u2B50 \u0E1B\u0E31\u0E01\u0E2B\u0E21\u0E38\u0E14\u0E02\u0E36\u0E49\u0E19\u0E1F\u0E35\u0E14\u0E2B\u0E25\u0E31\u0E01\u0E41\u0E25\u0E49\u0E27' : '\u2606 \u0E40\u0E25\u0E34\u0E01\u0E1B\u0E31\u0E01\u0E2B\u0E21\u0E38\u0E14\u0E41\u0E25\u0E49\u0E27', 'info');
         }
 
@@ -2958,9 +3197,14 @@
         }
 
         // ==================== SMS OVERLAY (Mobile) ====================
+        let _savedScrollY = 0;
+
         function openSmsPanel() {
             const panel = document.getElementById('messagesPanel');
             if (!panel || panel.classList.contains('sms-open')) return;
+            // บันทึกตำแหน่งสครอลล์เดิมและล็อก body
+            _savedScrollY = window.scrollY;
+            document.body.classList.add('sms-overlay-open');
             panel.classList.remove('sms-closing');
             panel.classList.add('sms-open');
             const fab = document.getElementById('smsFab');
@@ -2974,6 +3218,9 @@
             panel.classList.add('sms-closing');
             panel.addEventListener('animationend', function handler() {
                 panel.classList.remove('sms-closing');
+                // ปลดล็อก body และคืนตำแหน่งสครอลล์เดิม
+                document.body.classList.remove('sms-overlay-open');
+                window.scrollTo(0, _savedScrollY);
                 const fab = document.getElementById('smsFab');
                 if (fab && window.innerWidth <= 900) fab.style.display = 'flex';
                 panel.removeEventListener('animationend', handler);
