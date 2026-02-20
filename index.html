@@ -1293,7 +1293,20 @@
             url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
             url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
             url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+            url => `https://api.cors.lol/?url=${encodeURIComponent(url)}`,
+            url => `https://corsproxy.org/?${encodeURIComponent(url)}`,
+            url => `https://proxy.cors.sh/${url}`,
+            url => `https://thingproxy.freeboard.io/fetch/${url}`,
         ];
+        let _proxyIndex = 0;
+        function getRotatedProxies() {
+            const rotated = [];
+            for (let i = 0; i < CORS_PROXIES.length; i++) {
+                rotated.push(CORS_PROXIES[(_proxyIndex + i) % CORS_PROXIES.length]);
+            }
+            _proxyIndex = (_proxyIndex + 1) % CORS_PROXIES.length;
+            return rotated;
+        }
 
         const FLAG_IMG_MAP = {
             'TH': 'Flags_of_different_countries/flag_Thailand_232.png',
@@ -1358,6 +1371,23 @@
             'CO': 'Flags_of_different_countries/flag_Colombia_57.png',
             'PE': 'Flags_of_different_countries/flag_Peru_187.png',
             'CL': 'Flags_of_different_countries/flag_Chile_54.png',
+            'HR': 'Flags_of_different_countries/flag_Croatia_110.png',
+            'BG': 'Flags_of_different_countries/flag_Bulgaria_30.png',
+            'RS': 'Flags_of_different_countries/flag_Serbia_203.png',
+            'SK': 'Flags_of_different_countries/flag_Slovakia_215.png',
+            'SI': 'Flags_of_different_countries/flag_Slovenia_213.png',
+            'GE': 'Flags_of_different_countries/flag_Georgia_91.png',
+            'MD': 'Flags_of_different_countries/flag_Moldova_152.png',
+            'BY': 'Flags_of_different_countries/flag_Belarus_44.png',
+            'KE': 'Flags_of_different_countries/flag_Kenya_128.png',
+            'GH': 'Flags_of_different_countries/flag_Ghana_94.png',
+            'TZ': 'Flags_of_different_countries/flag_Tanzania_243.png',
+            'CI': "Flags_of_different_countries/flag_C\u00f4te_d'Ivoire_52.png",
+            'SN': 'Flags_of_different_countries/flag_Senegal_218.png',
+            'CM': 'Flags_of_different_countries/flag_Cameroon_55.png',
+            'MA': 'Flags_of_different_countries/flag_Morocco_150.png',
+            'DZ': 'Flags_of_different_countries/flag_Algeria_72.png',
+            'TN': 'Flags_of_different_countries/flag_Tunisia_237.png',
         };
 
         const COUNTRY_MAP = {
@@ -1415,9 +1445,26 @@
             '+856': { name: '\u0E25\u0E32\u0E27', code: 'LA' },
             '+95':  { name: '\u0E40\u0E21\u0E35\u0E22\u0E19\u0E21\u0E32\u0E23\u0E4C', code: 'MM' },
             '+880': { name: '\u0E1A\u0E31\u0E07\u0E01\u0E25\u0E32\u0E40\u0E17\u0E28', code: 'BD' },
-            '+92':  { name: '\u0E1B\u0E32\u0E01\u0E34\u0E2A\u0E16\u0E32\u0E19', code: 'PK' },
-            '+94':  { name: '\u0E28\u0E23\u0E35\u0E25\u0E31\u0E07\u0E01\u0E32', code: 'LK' },
-            '+977': { name: '\u0E40\u0E19\u0E1B\u0E32\u0E25', code: 'NP' },
+            '+92':  { name: 'ปากิสถาน', code: 'PK' },
+            '+94':  { name: 'ศรีลังกา', code: 'LK' },
+            '+977': { name: 'เนปาล', code: 'NP' },
+            '+385': { name: 'โครเอเชีย', code: 'HR' },
+            '+359': { name: 'บัลแกเรีย', code: 'BG' },
+            '+381': { name: 'เซอร์เบีย', code: 'RS' },
+            '+421': { name: 'สโลวาเกีย', code: 'SK' },
+            '+386': { name: 'สโลวีเนีย', code: 'SI' },
+            '+995': { name: 'จอร์เจีย', code: 'GE' },
+            '+373': { name: 'มอลโดวา', code: 'MD' },
+            '+375': { name: 'เบลารุส', code: 'BY' },
+            '+254': { name: 'เคนยา', code: 'KE' },
+            '+233': { name: 'กานา', code: 'GH' },
+            '+255': { name: 'แทนซาเนีย', code: 'TZ' },
+            '+225': { name: 'ไอวอรี่โคสต์', code: 'CI' },
+            '+221': { name: 'เซเนกัล', code: 'SN' },
+            '+237': { name: 'แคเมอรูน', code: 'CM' },
+            '+212': { name: 'โมร็อกโก', code: 'MA' },
+            '+213': { name: 'แอลจีเรีย', code: 'DZ' },
+            '+216': { name: 'ตูนิเซีย', code: 'TN' },
         };
 
         const SMS24_COUNTRIES = [
@@ -1427,7 +1474,8 @@
             'hu','cz','ro','tr','mx','ng','za','eg','ae','il',
             'sa','hk','tw','ie','ee','lt','lv','gr','az','uz',
             'kh','la','mm','bd','pk','lk','np','ca','ar','co',
-            'pe','cl'
+            'pe','cl','hr','bg','rs','sk','si','ge','md','by',
+            'ke','gh','tz','ci','sn','cm','ma','dz','tn'
         ];
 
         const FALLBACK_SERVICES = [
@@ -1447,6 +1495,54 @@
         const numberCache = { data: null, time: 0 };
         const msgCache = {};
 
+        // ==================== localStorage PERSISTENCE ====================
+        const STORAGE_KEY_NUMBERS = 'smsNumbers_v2';
+        const STORAGE_KEY_NUMBERS_TIME = 'smsNumbers_v2_time';
+
+        function saveNumbersToStorage(numbers) {
+            try {
+                localStorage.setItem(STORAGE_KEY_NUMBERS, JSON.stringify(numbers));
+                localStorage.setItem(STORAGE_KEY_NUMBERS_TIME, Date.now().toString());
+            } catch(e) {
+                console.warn('localStorage save failed:', e);
+            }
+        }
+
+        function loadNumbersFromStorage() {
+            try {
+                const data = localStorage.getItem(STORAGE_KEY_NUMBERS);
+                if (data) {
+                    const nums = JSON.parse(data);
+                    if (Array.isArray(nums) && nums.length > 0) return nums;
+                }
+            } catch(e) {}
+            return null;
+        }
+
+        function getStorageTime() {
+            const t = localStorage.getItem(STORAGE_KEY_NUMBERS_TIME);
+            return t ? parseInt(t) : 0;
+        }
+
+        function clearNumbersStorage() {
+            localStorage.removeItem(STORAGE_KEY_NUMBERS);
+            localStorage.removeItem(STORAGE_KEY_NUMBERS_TIME);
+            numberCache.data = null;
+            numberCache.time = 0;
+        }
+
+        function mergeNumbers(existing, newNums) {
+            const seen = new Set(existing.map(n => n.number));
+            const merged = [...existing];
+            for (const n of newNums) {
+                if (!seen.has(n.number)) {
+                    seen.add(n.number);
+                    merged.push(n);
+                }
+            }
+            return merged;
+        }
+
         // ==================== STATE ====================
         let allNumbers = [];
         let filteredNumbers = [];
@@ -1463,16 +1559,29 @@
         }
 
         // ==================== CORS FETCH ====================
-        async function corsFetch(url, timeoutMs = 18000) {
-            for (const proxyFn of CORS_PROXIES) {
+        async function corsFetch(url, timeoutMs = 15000) {
+            const proxies = getRotatedProxies();
+            for (const proxyFn of proxies) {
                 try {
                     const proxyUrl = proxyFn(url);
                     const controller = new AbortController();
                     const timer = setTimeout(() => controller.abort(), timeoutMs);
                     const resp = await fetch(proxyUrl, { signal: controller.signal });
                     clearTimeout(timer);
-                    if (resp.ok) return await resp.text();
+                    if (resp.ok) {
+                        const text = await resp.text();
+                        if (text && text.length > 100) return text;
+                    }
                 } catch (e) { continue; }
+            }
+            return null;
+        }
+
+        async function corsFetchRetry(url, retries = 2) {
+            for (let attempt = 0; attempt < retries; attempt++) {
+                const result = await corsFetch(url);
+                if (result) return result;
+                if (attempt < retries - 1) await new Promise(r => setTimeout(r, 500 + Math.random() * 500));
             }
             return null;
         }
@@ -1518,7 +1627,7 @@
 
         // ==================== SCRAPERS ====================
         async function scrapeReceiveSmss() {
-            const html = await corsFetch('https://receive-smss.com/');
+            const html = await corsFetchRetry('https://receive-smss.com/');
             if (!html) return [];
             const doc = new DOMParser().parseFromString(html, 'text/html');
             const nums = [], seen = new Set();
@@ -1539,7 +1648,7 @@
         }
 
         async function scrapeReceivesmsCc() {
-            const html = await corsFetch('https://receivesms.cc/');
+            const html = await corsFetchRetry('https://receivesms.cc/');
             if (!html) return [];
             const doc = new DOMParser().parseFromString(html, 'text/html');
             const nums = [], seen = new Set();
@@ -1562,7 +1671,7 @@
         }
 
         async function scrapeSms24Page(url, label) {
-            const html = await corsFetch(url);
+            const html = await corsFetchRetry(url);
             if (!html) return [];
             const doc = new DOMParser().parseFromString(html, 'text/html');
             const nums = [], seen = new Set();
@@ -1596,12 +1705,41 @@
             return nums;
         }
 
-        async function scrapeSms24Country(slug) {
-            return await scrapeSms24Page(`https://sms24.me/en/countries/${slug}`, `sms24-${slug.toUpperCase()}`);
+        async function scrapeSms24Country(slug, maxPages = 6) {
+            // Scrape up to 6 pages per country (like Test 3)
+            const all = [];
+            const seen = new Set();
+            // Run pages in parallel batches of 3
+            for (let batchStart = 1; batchStart <= maxPages; batchStart += 3) {
+                const pageTasks = [];
+                for (let p = batchStart; p < batchStart + 3 && p <= maxPages; p++) {
+                    const url = p === 1
+                        ? `https://sms24.me/en/countries/${slug}`
+                        : `https://sms24.me/en/countries/${slug}/${p}`;
+                    pageTasks.push(scrapeSms24Page(url, `sms24-${slug.toUpperCase()}-p${p}`));
+                }
+                const results = await Promise.allSettled(pageTasks);
+                let emptyCount = 0;
+                for (const r of results) {
+                    if (r.status === 'fulfilled' && r.value && r.value.length > 0) {
+                        for (const n of r.value) {
+                            if (!seen.has(n.number)) {
+                                seen.add(n.number);
+                                all.push(n);
+                            }
+                        }
+                    } else {
+                        emptyCount++;
+                    }
+                }
+                // Stop if all pages in batch were empty
+                if (emptyCount >= pageTasks.length) break;
+            }
+            return all;
         }
 
         async function scrapeHs3x() {
-            const html = await corsFetch('https://hs3x.com/');
+            const html = await corsFetchRetry('https://hs3x.com/');
             if (!html) return [];
             const doc = new DOMParser().parseFromString(html, 'text/html');
             const nums = [], seen = new Set();
@@ -1622,7 +1760,7 @@
         }
 
         async function scrapeSmsreceivefree() {
-            const html = await corsFetch('https://smsreceivefree.com/');
+            const html = await corsFetchRetry('https://smsreceivefree.com/');
             if (!html) return [];
             const doc = new DOMParser().parseFromString(html, 'text/html');
             const nums = [], seen = new Set();
@@ -1645,7 +1783,7 @@
 
         async function scrapeAnonymsmsPage(pageNum) {
             const url = pageNum === 1 ? 'https://anonymsms.com/' : `https://anonymsms.com/page/${pageNum}/`;
-            const html = await corsFetch(url);
+            const html = await corsFetchRetry(url);
             if (!html) return [];
             const doc = new DOMParser().parseFromString(html, 'text/html');
             const nums = [], seen = new Set();
@@ -1669,7 +1807,7 @@
         }
 
         async function scrapeGenericNumbers(url, label) {
-            const html = await corsFetch(url);
+            const html = await corsFetchRetry(url);
             if (!html) return [];
             const doc = new DOMParser().parseFromString(html, 'text/html');
             const nums = [], seen = new Set();
@@ -1851,9 +1989,59 @@
         }
 
         // ==================== LOAD NUMBERS (Client-Side Scraping) ====================
-        async function loadAllNumbers() {
-            // Check cache
-            if (numberCache.data && (Date.now() - numberCache.time) < CACHE_TTL) {
+        
+        // Streaming UI updater - batches renders to avoid freezing
+        let _renderPending = false;
+        let _lastRenderTime = 0;
+        function scheduleRender() {
+            if (_renderPending) return;
+            _renderPending = true;
+            const now = Date.now();
+            const delay = now - _lastRenderTime < 300 ? 300 : 0;
+            setTimeout(() => {
+                _renderPending = false;
+                _lastRenderTime = Date.now();
+                const curFilter = document.querySelector('.filter-chip.active')?.dataset?.country || 'all';
+                filteredNumbers = curFilter === 'all' ? [...allNumbers] : allNumbers.filter(n => n.code === curFilter);
+                renderNumbers(filteredNumbers);
+                applySearchFilter();
+                updateCountryFilter();
+                document.getElementById('numberCount').textContent = filteredNumbers.length;
+            }, delay);
+        }
+        
+        async function loadAllNumbers(forceRefresh = false) {
+            // Step 1: Load from localStorage first (instant display)
+            if (!forceRefresh) {
+                const stored = loadNumbersFromStorage();
+                if (stored && stored.length > 0) {
+                    allNumbers = stored;
+                    filteredNumbers = [...allNumbers];
+                    renderNumbers(filteredNumbers);
+                    updateCountryFilter();
+                    document.getElementById('numberCount').textContent = allNumbers.length;
+                    const storageAge = Date.now() - getStorageTime();
+                    const ageMin = Math.floor(storageAge / 60000);
+                    setStatus('online', `\u0E1E\u0E23\u0E49\u0E2D\u0E21\u0E43\u0E0A\u0E49\u0E07\u0E32\u0E19 \u2022 ${allNumbers.length} \u0E40\u0E1A\u0E2D\u0E23\u0E4C (\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E40\u0E21\u0E37\u0E48\u0E2D ${ageMin} \u0E19\u0E32\u0E17\u0E35\u0E17\u0E35\u0E48\u0E41\u0E25\u0E49\u0E27)`);
+                    updateLastUpdate();
+                    
+                    // Also populate memory cache
+                    numberCache.data = allNumbers;
+                    numberCache.time = getStorageTime();
+                    
+                    // If stored data is fresh enough, skip scraping
+                    if (storageAge < CACHE_TTL) {
+                        showToast('\u2139\uFE0F \u0E43\u0E0A\u0E49\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E17\u0E35\u0E48\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E44\u0E27\u0E49', 'info');
+                        return;
+                    }
+                    
+                    // Data exists but old - scrape in background to update
+                    showToast('\u{1F504} \u0E01\u0E33\u0E25\u0E31\u0E07\u0E2D\u0E31\u0E1B\u0E40\u0E14\u0E15\u0E40\u0E1A\u0E2D\u0E23\u0E4C\u0E40\u0E1E\u0E34\u0E48\u0E21\u0E40\u0E15\u0E34\u0E21...', 'info');
+                }
+            }
+            
+            // Step 2: Check memory cache
+            if (!forceRefresh && numberCache.data && (Date.now() - numberCache.time) < CACHE_TTL) {
                 allNumbers = numberCache.data;
                 filteredNumbers = [...allNumbers];
                 renderNumbers(filteredNumbers);
@@ -1865,69 +2053,200 @@
                 return;
             }
 
-            showNumbersLoading();
+            const existingNumbers = forceRefresh ? [] : [...allNumbers];
+            if (existingNumbers.length === 0) {
+                showNumbersLoading();
+            }
             setStatus('loading', '\u0E01\u0E33\u0E25\u0E31\u0E07\u0E42\u0E2B\u0E25\u0E14\u0E40\u0E1A\u0E2D\u0E23\u0E4C...');
-            document.getElementById('numberCount').textContent = '0';
-            allNumbers = [];
-            filteredNumbers = [];
+            if (existingNumbers.length === 0) {
+                document.getElementById('numberCount').textContent = '0';
+                allNumbers = [];
+                filteredNumbers = [];
+            }
 
-            // Build scraper tasks
-            const tasks = [
-                { name: 'receive-smss', fn: scrapeReceiveSmss },
-                { name: 'receivesms-cc', fn: scrapeReceivesmsCc },
-                { name: 'hs3x', fn: scrapeHs3x },
-                { name: 'smsrcvfree', fn: scrapeSmsreceivefree },
-            ];
-
-            // SMS24 countries (1 page each)
+            // ==================== BUILD ALL SCRAPER TASKS ====================
+            const tasks = [];
+            
+            // --- Priority 1: Fast single-page scrapers (โหลดเร็ว แสดงก่อน) ---
+            tasks.push({ name: 'receive-smss', fn: scrapeReceiveSmss, priority: 1 });
+            tasks.push({ name: 'receivesms-cc', fn: scrapeReceivesmsCc, priority: 1 });
+            tasks.push({ name: 'hs3x', fn: scrapeHs3x, priority: 1 });
+            tasks.push({ name: 'smsrcvfree', fn: scrapeSmsreceivefree, priority: 1 });
+            
+            // --- Priority 2: Thai-specific sources ---
+            tasks.push({ name: 'sms24-TH-numbers', fn: () => scrapeGenericNumbers('https://sms24.me/en/numbers/TH/', 'sms24-TH-numbers'), priority: 2 });
+            tasks.push({ name: 'freesmsnum-TH', fn: () => scrapeGenericNumbers('https://www.freesmsnumber.com/free-phone-numbers-th', 'freesmsnum-TH'), priority: 2 });
+            tasks.push({ name: 'quackr-TH', fn: () => scrapeGenericNumbers('https://quackr.io/virtual-number/thailand', 'quackr-TH'), priority: 2 });
+            tasks.push({ name: 'smstome-TH', fn: () => scrapeGenericNumbers('https://smstome.com/country/thailand', 'smstome-TH'), priority: 2 });
+            tasks.push({ name: 'tempnum-TH', fn: () => scrapeGenericNumbers('https://temp-number.com/countries/thailand/', 'tempnum-TH'), priority: 2 });
+            tasks.push({ name: '7sim-TH', fn: () => scrapeGenericNumbers('https://7sim.net/th/', '7sim-TH'), priority: 2 });
+            
+            // --- Priority 3: SMS24 countries (71 countries × 6 pages) ---
             for (const slug of SMS24_COUNTRIES) {
-                tasks.push({ name: `sms24-${slug.toUpperCase()}`, fn: () => scrapeSms24Country(slug) });
+                tasks.push({ name: `sms24-${slug.toUpperCase()}`, fn: () => scrapeSms24Country(slug), priority: 3 });
             }
 
-            // Anonymsms pages
-            for (let p = 1; p <= 5; p++) {
-                tasks.push({ name: `anonymsms-p${p}`, fn: () => scrapeAnonymsmsPage(p) });
+            // --- Priority 4: Anonymsms pages (up to 40 pages) ---
+            for (let p = 1; p <= 40; p++) {
+                tasks.push({ name: `anonymsms-p${p}`, fn: () => scrapeAnonymsmsPage(p), priority: 4 });
             }
+            
+            // --- Priority 5: receive-sms-online.info (35 countries) ---
+            const rcvOnlineCountries = [
+                'Thailand', 'United-States', 'United-Kingdom', 'France', 'Germany',
+                'Indonesia', 'India', 'Russia', 'China', 'Philippines',
+                'Malaysia', 'Japan', 'South-Korea', 'Brazil', 'Australia',
+                'Canada', 'Sweden', 'Netherlands', 'Poland', 'Spain',
+                'Vietnam', 'Singapore', 'Italy', 'Turkey', 'Mexico',
+                'Ukraine', 'Romania', 'Hong-Kong', 'Norway', 'Finland',
+                'Denmark', 'Austria', 'Switzerland', 'Belgium', 'Portugal',
+            ];
+            for (const country of rcvOnlineCountries) {
+                const code = country.replace(/-/g, '');
+                tasks.push({ name: `rcv-online-${code}`, fn: () => scrapeGenericNumbers(`https://receive-sms-online.info/${country}/`, `rcv-online-${code}`), priority: 5 });
+            }
+            
+            // --- Priority 6: Additional sources ---
+            tasks.push({ name: 'freephonenum', fn: () => scrapeGenericNumbers('https://freephonenum.com/', 'freephonenum'), priority: 6 });
+            tasks.push({ name: 'freephonenum-US', fn: () => scrapeGenericNumbers('https://freephonenum.com/us/', 'freephonenum-US'), priority: 6 });
+            tasks.push({ name: 'freephonenum-UK', fn: () => scrapeGenericNumbers('https://freephonenum.com/gb/', 'freephonenum-UK'), priority: 6 });
+            tasks.push({ name: 'receiveasms', fn: () => scrapeGenericNumbers('https://receive-a-sms.com/', 'receiveasms'), priority: 6 });
+            tasks.push({ name: 'onlinesms', fn: () => scrapeGenericNumbers('https://www.online-sms.org/', 'onlinesms'), priority: 6 });
+            tasks.push({ name: 'smsonlineco', fn: () => scrapeGenericNumbers('https://sms-online.co/receive-free-sms', 'smsonlineco'), priority: 6 });
+            tasks.push({ name: 'rcvsmsfree-cc', fn: () => scrapeGenericNumbers('https://receive-sms-free.cc/', 'rcvsmsfree-cc'), priority: 6 });
+            tasks.push({ name: 'tempphone', fn: () => scrapeGenericNumbers('https://temporary-phone-number.com/', 'tempphone'), priority: 6 });
+            
+            // --- Priority 7: More sources for extra coverage ---
+            tasks.push({ name: 'getfreesmsnumber', fn: () => scrapeGenericNumbers('https://getfreesmsnumber.com/', 'getfreesmsnumber'), priority: 7 });
+            tasks.push({ name: 'mytrashsms', fn: () => scrapeGenericNumbers('https://www.mytrashmobile.com/numbers', 'mytrashsms'), priority: 7 });
+            tasks.push({ name: 'receivesmsonline-net', fn: () => scrapeGenericNumbers('https://www.receivesmsonline.net/', 'receivesmsonline-net'), priority: 7 });
+            tasks.push({ name: 'smsnumbersonline', fn: () => scrapeGenericNumbers('https://smsnumbersonline.com/', 'smsnumbersonline'), priority: 7 });
+            tasks.push({ name: 'freeonlinephone', fn: () => scrapeGenericNumbers('https://www.freeonlinephone.org/', 'freeonlinephone'), priority: 7 });
+            tasks.push({ name: 'sms-activate-free', fn: () => scrapeGenericNumbers('https://sms-activate.org/en/free-phone-numbers', 'sms-activate-free'), priority: 7 });
+            tasks.push({ name: 'smscodeonline', fn: () => scrapeGenericNumbers('https://smscodeonline.com/', 'smscodeonline'), priority: 7 });
+            tasks.push({ name: 'receivesms-co', fn: () => scrapeGenericNumbers('https://www.receivesms.co/', 'receivesms-co'), priority: 7 });
+            tasks.push({ name: 'temp-sms-org', fn: () => scrapeGenericNumbers('https://temp-sms.org/', 'temp-sms-org'), priority: 7 });
+            tasks.push({ name: 'sms-man-free', fn: () => scrapeGenericNumbers('https://sms-man.com/free', 'sms-man-free'), priority: 7 });
+            tasks.push({ name: 'receive-sms-io', fn: () => scrapeGenericNumbers('https://receive-sms.cc/', 'receive-sms-io'), priority: 7 });
+            tasks.push({ name: 'receiveasms-free', fn: () => scrapeGenericNumbers('https://receiveasms.com/', 'receiveasms-free'), priority: 7 });
 
-            // Thai-specific
-            tasks.push({ name: 'rcv-online-TH', fn: () => scrapeGenericNumbers('https://receive-sms-online.info/Thailand/', 'rcv-online-TH') });
-
-            const seen = new Set();
+            // ==================== STREAMING EXECUTION ====================
+            // Sort by priority so fast scrapers run first
+            tasks.sort((a, b) => a.priority - b.priority);
+            
+            const seen = new Set(existingNumbers.map(n => n.number));
             let completed = 0;
             const total = tasks.length;
-
-            // Run in batches of 6
-            const batchSize = 6;
-            for (let i = 0; i < tasks.length; i += batchSize) {
-                const batch = tasks.slice(i, i + batchSize);
-                const results = await Promise.allSettled(batch.map(async task => {
-                    try {
-                        return { name: task.name, nums: await task.fn() || [] };
-                    } catch (e) {
-                        console.error(`Scraper ${task.name} error:`, e);
-                        return { name: task.name, nums: [] };
-                    }
-                }));
-
-                for (const result of results) {
+            const failedTasks = [];
+            
+            // Concurrency limiter: max 6 at a time to avoid freezing
+            const MAX_CONCURRENT = 6;
+            let running = 0;
+            let taskIndex = 0;
+            
+            await new Promise((resolveAll) => {
+                function onTaskDone(taskName, nums, task, failed) {
                     completed++;
-                    if (result.status === 'fulfilled') {
-                        for (const n of result.value.nums) {
+                    running--;
+                    
+                    if (failed || !nums || nums.length === 0) {
+                        if (task) failedTasks.push(task);
+                    } else {
+                        // Add new numbers immediately
+                        let added = 0;
+                        for (const n of nums) {
                             if (!seen.has(n.number)) {
                                 seen.add(n.number);
                                 allNumbers.push(n);
+                                added++;
                             }
                         }
+                        if (added > 0) {
+                            // Schedule non-blocking UI update
+                            scheduleRender();
+                        }
+                    }
+                    
+                    // Update status
+                    setStatus('loading', `โหลดแล้ว ${allNumbers.length} เบอร์... (${completed}/${total})`);
+                    
+                    // Launch next tasks
+                    launchNext();
+                    
+                    // Check if all done
+                    if (completed >= total) {
+                        resolveAll();
                     }
                 }
+                
+                function launchNext() {
+                    while (running < MAX_CONCURRENT && taskIndex < tasks.length) {
+                        const task = tasks[taskIndex++];
+                        running++;
+                        (async () => {
+                            try {
+                                const nums = await task.fn() || [];
+                                onTaskDone(task.name, nums, task, false);
+                            } catch (e) {
+                                console.error(`Scraper ${task.name} error:`, e);
+                                onTaskDone(task.name, [], task, true);
+                            }
+                        })();
+                    }
+                }
+                
+                // Start initial batch
+                launchNext();
+            });
 
-                // Progressive UI update
-                const curFilter = document.querySelector('.filter-chip.active')?.dataset?.country || 'all';
-                filteredNumbers = curFilter === 'all' ? [...allNumbers] : allNumbers.filter(n => n.code === curFilter);
-                applySearchFilter();
-                updateCountryFilter();
-                document.getElementById('numberCount').textContent = filteredNumbers.length;
-                setStatus('loading', `\u0E42\u0E2B\u0E25\u0E14\u0E41\u0E25\u0E49\u0E27 ${allNumbers.length} \u0E40\u0E1A\u0E2D\u0E23\u0E4C... (${completed}/${total})`);
+            // Retry failed tasks (fire-and-forget style too)
+            if (failedTasks.length > 0) {
+                setStatus('loading', `ลองใหม่ ${failedTasks.length} แหล่ง...`);
+                const retryLimit = Math.min(failedTasks.length, 40);
+                let retryDone = 0;
+                
+                await new Promise((resolveRetry) => {
+                    let retryRunning = 0;
+                    let retryIdx = 0;
+                    
+                    function onRetryDone(nums) {
+                        retryDone++;
+                        retryRunning--;
+                        if (nums && nums.length > 0) {
+                            for (const n of nums) {
+                                if (!seen.has(n.number)) {
+                                    seen.add(n.number);
+                                    allNumbers.push(n);
+                                }
+                            }
+                            scheduleRender();
+                        }
+                        setStatus('loading', `ลองใหม่... ${allNumbers.length} เบอร์`);
+                        launchRetry();
+                        if (retryDone >= retryLimit) resolveRetry();
+                    }
+                    
+                    function launchRetry() {
+                        while (retryRunning < MAX_CONCURRENT && retryIdx < retryLimit) {
+                            const task = failedTasks[retryIdx++];
+                            retryRunning++;
+                            (async () => {
+                                try {
+                                    const nums = await task.fn() || [];
+                                    onRetryDone(nums);
+                                } catch { onRetryDone([]); }
+                            })();
+                        }
+                    }
+                    
+                    launchRetry();
+                    if (retryLimit === 0) resolveRetry();
+                });
+            }
+
+            // Merge with existing numbers from localStorage
+            if (existingNumbers.length > 0) {
+                allNumbers = mergeNumbers(existingNumbers, allNumbers);
             }
 
             // Sort: Thai first, then by country
@@ -1937,21 +2256,25 @@
                 return a.country.localeCompare(b.country);
             });
 
-            // Cache results
+            // Cache results + save to localStorage
             if (allNumbers.length > 0) {
                 numberCache.data = allNumbers;
                 numberCache.time = Date.now();
+                saveNumbersToStorage(allNumbers);
             }
 
             // Final render
             const curFilter = document.querySelector('.filter-chip.active')?.dataset?.country || 'all';
             filteredNumbers = curFilter === 'all' ? [...allNumbers] : allNumbers.filter(n => n.code === curFilter);
+            renderNumbers(filteredNumbers);
             applySearchFilter();
             updateCountryFilter();
             document.getElementById('numberCount').textContent = filteredNumbers.length;
 
             if (allNumbers.length > 0) {
-                setStatus('online', `\u0E1E\u0E23\u0E49\u0E2D\u0E21\u0E43\u0E0A\u0E49\u0E07\u0E32\u0E19 \u2022 ${allNumbers.length} \u0E40\u0E1A\u0E2D\u0E23\u0E4C`);
+                const thaiCount = allNumbers.filter(n => n.is_thai).length;
+                setStatus('online', `\u0E1E\u0E23\u0E49\u0E2D\u0E21\u0E43\u0E0A\u0E49\u0E07\u0E32\u0E19 \u2022 ${allNumbers.length} \u0E40\u0E1A\u0E2D\u0E23\u0E4C (\u0E44\u0E17\u0E22 ${thaiCount})`);
+                showToast(`\u2705 \u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E41\u0E25\u0E49\u0E27 ${allNumbers.length} \u0E40\u0E1A\u0E2D\u0E23\u0E4C`, 'success');
             } else {
                 showNumbersEmpty([]);
                 setStatus('error', '\u0E44\u0E21\u0E48\u0E2A\u0E32\u0E21\u0E32\u0E23\u0E16\u0E42\u0E2B\u0E25\u0E14\u0E40\u0E1A\u0E2D\u0E23\u0E4C\u0E44\u0E14\u0E49');
@@ -1969,13 +2292,27 @@
             try {
                 numberCache.data = null;
                 numberCache.time = 0;
+                // Don't force refresh - merge with existing localStorage data
                 await loadAllNumbers();
-                showToast('\u2705 \u0E23\u0E35\u0E40\u0E1F\u0E23\u0E0A\u0E40\u0E23\u0E35\u0E22\u0E1A\u0E23\u0E49\u0E2D\u0E22', 'success');
             } finally {
                 btn.disabled = false;
                 btn.classList.remove('btn-loading');
                 btn.innerHTML = '<span class="sprite-icon ico-refresh"></span> \u0E23\u0E35\u0E40\u0E1F\u0E23\u0E0A';
             }
+        }
+
+        function clearAllCache() {
+            clearNumbersStorage();
+            numberCache.data = null;
+            numberCache.time = 0;
+            Object.keys(msgCache).forEach(k => delete msgCache[k]);
+            allNumbers = [];
+            filteredNumbers = [];
+            renderNumbers([]);
+            updateCountryFilter();
+            document.getElementById('numberCount').textContent = '0';
+            setStatus('offline', '\u0E25\u0E49\u0E32\u0E07\u0E41\u0E04\u0E0A\u0E41\u0E25\u0E49\u0E27 \u0E01\u0E14\u0E23\u0E35\u0E40\u0E1F\u0E23\u0E0A\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E42\u0E2B\u0E25\u0E14\u0E43\u0E2B\u0E21\u0E48');
+            showToast('\u{1F5D1}\uFE0F \u0E25\u0E49\u0E32\u0E07\u0E41\u0E04\u0E0A\u0E41\u0E25\u0E30\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E17\u0E35\u0E48\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E44\u0E27\u0E49\u0E41\u0E25\u0E49\u0E27', 'info');
         }
 
         function renderNumbers(numbers) {
@@ -2359,11 +2696,17 @@
 
         // ==================== CACHE ====================
         async function clearCache() {
+            clearNumbersStorage();
             numberCache.data = null;
             numberCache.time = 0;
             Object.keys(msgCache).forEach(k => delete msgCache[k]);
-            showToast('\uD83D\uDDD1\uFE0F \u0E25\u0E49\u0E32\u0E07\u0E41\u0E04\u0E0A\u0E40\u0E23\u0E35\u0E22\u0E1A\u0E23\u0E49\u0E2D\u0E22', 'success');
-            await loadAllNumbers();
+            allNumbers = [];
+            filteredNumbers = [];
+            renderNumbers([]);
+            updateCountryFilter();
+            document.getElementById('numberCount').textContent = '0';
+            showToast('\uD83D\uDDD1\uFE0F \u0E25\u0E49\u0E32\u0E07\u0E41\u0E04\u0E0A\u0E41\u0E25\u0E30\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E17\u0E35\u0E48\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E44\u0E27\u0E49\u0E41\u0E25\u0E49\u0E27', 'success');
+            setStatus('offline', '\u0E25\u0E49\u0E32\u0E07\u0E41\u0E04\u0E0A\u0E41\u0E25\u0E49\u0E27 \u0E01\u0E14\u0E23\u0E35\u0E40\u0E1F\u0E23\u0E0A\u0E40\u0E1E\u0E37\u0E48\u0E2D\u0E42\u0E2B\u0E25\u0E14\u0E43\u0E2B\u0E21\u0E48');
         }
 
         // ==================== UTILITIES ====================
