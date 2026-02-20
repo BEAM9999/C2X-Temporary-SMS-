@@ -1,0 +1,2453 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png?v=2">
+    <link rel="shortcut icon" type="image/png" href="favicon-96x96.png?v=2">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📱 C2Xเบอร์โทรชั่วคราว - Temp SMS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a1a;
+            --bg-secondary: #12122a;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --bg-card-hover: rgba(255, 255, 255, 0.08);
+            --bg-glass: rgba(255, 255, 255, 0.06);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(0, 212, 255, 0.4);
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --accent: #00d4ff;
+            --accent-glow: rgba(0, 212, 255, 0.2);
+            --purple: #7c3aed;
+            --purple-glow: rgba(124, 58, 237, 0.2);
+            --green: #10b981;
+            --red: #ef4444;
+            --orange: #f59e0b;
+            --radius: 16px;
+            --radius-sm: 10px;
+            --radius-xs: 6px;
+            /* ==================== ปรับแต่งไอคอนหลัก (โลโก้มุมซ้ายบน) ==================== */
+            --logo-box-size: 56px; /* ขนาดกรอบไอคอนหลัก (กว้าง/สูง) */
+            --logo-box-radius: 14px; /* ความโค้งมุมกรอบไอคอนหลัก */
+            --logo-box-justify: flex-end; /* ตำแหน่งแนวนอนของไอคอนในกรอบ: flex-start | center | flex-end */
+
+            --logo-main-icon-size: 60px; /* ขนาดหลักแบบรวม (ใช้เมื่อ width/height ด้านล่างไม่ได้ปรับ) */
+            --logo-main-icon-width: var(--logo-main-icon-size); /* ความกว้างไอคอนหลักแบบละเอียด */
+            --logo-main-icon-height: var(--logo-main-icon-size); /* ความสูงไอคอนหลักแบบละเอียด */
+
+            --logo-main-icon-offset: 15px; /* ขยับซ้ายขวา (บวกขวา, ลบซ้าย) */
+            --logo-main-icon-offset-y: -13px; /* ขยับขึ้นลง (บวกลง, ลบขึ้น) */
+
+            --logo-main-icon-rotate: 0deg; /* หมุนไอคอนหลัก เช่น 5deg หรือ -3deg */
+            --logo-main-icon-scale-x: 1.5; /* ยืด/หดแนวนอน (1 = ปกติ) */
+            --logo-main-icon-scale-y: 1.3; /* ยืด/หดแนวตั้ง (1 = ปกติ) */
+            --logo-main-icon-opacity: 1; /* ความทึบไอคอนหลัก (0-1) */
+
+            --logo-main-icon-sprite-size-x: 400%; /* ขนาดพื้นหลัง sprite แนวนอน (ปรับเพื่อซูม/ย่อ sprite) */
+            --logo-main-icon-sprite-size-y: 200%; /* ขนาดพื้นหลัง sprite แนวตั้ง */
+            --logo-main-icon-sprite-pos-x: 100%; /* ตำแหน่งครอป sprite แนวนอน */
+            --logo-main-icon-sprite-pos-y: 0%; /* ตำแหน่งครอป sprite แนวตั้ง */
+            /* ========================================================================= */
+
+            /* ปรับไอคอนหัวข้อการ์ด (เบอร์ที่ใช้ได้ / ข้อความ SMS) */
+            --panel-title-icon-size: 50px;
+            --panel-title-icon-offset-x: -10px;
+            --panel-title-icon-offset-y: 0px;
+
+            /* ปรับไอคอนในช่องค้นหา */
+            --search-icon-size: 40px;
+            --search-icon-offset-x: -15px;
+            --search-icon-offset-y: 0px;
+
+            /* ปรับไอคอนปุ่มรีเฟรช (แยกเฉพาะของปุ่มรีเฟรช) */
+            --refresh-btn-icon-size: 30px;
+            --refresh-btn-icon-offset-x: -7px;
+            --refresh-btn-icon-offset-y: -2px;
+
+            /* ปรับไอคอนปุ่มอัตโนมัติ (แยกเฉพาะของปุ่มอัตโนมัติ) */
+            --auto-btn-icon-size: 30px;
+            --auto-btn-icon-offset-x: -4px;
+            --auto-btn-icon-offset-y: 2px;
+
+            /* ปรับจุดหมุนไอคอนรีเฟรชตอนกำลังโหลด (แก้ปัญหา sprite รวมหมุนเยื้องศูนย์) */
+            --refresh-spin-origin-x: 60%;
+            --refresh-spin-origin-y: 55%;
+            --refresh-spin-offset-x: var(--refresh-btn-icon-offset-x);
+            --refresh-spin-offset-y: var(--refresh-btn-icon-offset-y);
+
+            /* ปรับไอคอนปุ่มเล็ก (ล้างแคช / รีเฟรชข้อความ / ทั้งหมด) */
+            --btn-sm-icon-size: 50px;
+            --btn-sm-icon-offset-x: 0px;
+            --btn-sm-icon-offset-y: 0px;
+
+            /* ปรับไอคอนปุ่ม Refresh ข้อความ (แยกเฉพาะของปุ่มนี้) */
+            --msg-refresh-icon-size: 50px;
+            --msg-refresh-icon-offset-x: -9px;
+            --msg-refresh-icon-offset-y: 0px;
+            --msg-refresh-spin-origin-x: 60%;
+            --msg-refresh-spin-origin-y: 55%;
+            --msg-refresh-spin-offset-x: var(--msg-refresh-icon-offset-x);
+            --msg-refresh-spin-offset-y: var(--msg-refresh-icon-offset-y);
+
+            /* ปรับไอคอนหัวข้อบริการเสริม */
+            --fallback-header-icon-size: 50px;
+            --fallback-header-icon-offset-x: 0px;
+            --fallback-header-icon-offset-y: 0px;
+
+            /* ปรับไอคอนลูกศรเลื่อนประเทศ (ซ้าย/ขวา) */
+            --country-arrow-btn-width: 50px;
+            --country-arrow-icon-size: 55px;
+            --country-arrow-icon-offset-x: 0px;
+            --country-arrow-icon-offset-y: 0px;
+
+                /* ==================== ปรับไอคอน icon2 แบบแยกอิสระ 3 ไอคอน ====================
+                    เซลล์ซ้าย  : ico2-star-yellow
+                    เซลล์กลาง : ico2-star-black
+                    เซลล์ขวา   : ico2-copy
+                    แต่ละตัวปรับเองได้ (ขนาด/ซ้ายขวา/ขึ้นลง) ไม่เชื่อมกัน
+                */
+                --ico2-star-yellow-size: 60px;
+                --ico2-star-yellow-offset-x: -9px;
+                --ico2-star-yellow-offset-y: 0px;
+                --ico2-star-yellow-scale-x: 1;
+                --ico2-star-yellow-scale-y: 2;
+
+                --ico2-star-black-size: 60px;
+                --ico2-star-black-offset-x: 0px;
+                --ico2-star-black-offset-y: 0px;
+                --ico2-star-black-scale-x: 1;
+                --ico2-star-black-scale-y: 2;
+
+                --ico2-copy-size: 40px;
+                --ico2-copy-offset-x: 4px;
+                --ico2-copy-offset-y: 0px;
+                --ico2-copy-scale-x: 1;
+                --ico2-copy-scale-y: 2;
+
+                --copy-btn-padding: 10px;    /* padding รอบปุ่มคัดลอก */
+                --star-btn-padding: 0px;    /* padding รอบปุ่มดาว */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans Thai', 'Inter', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background effects */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 20%, rgba(0, 212, 255, 0.06) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(124, 58, 237, 0.06) 0%, transparent 50%),
+                        radial-gradient(circle at 50% 50%, rgba(0, 212, 255, 0.02) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ============ HEADER ============ */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 10, 26, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: var(--logo-box-size);
+            height: var(--logo-box-size);
+            /* จุดนี้คือกรอบไอคอนหลัก ปรับขนาดกรอบได้ที่ width/height นี้ */
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            border-radius: var(--logo-box-radius);
+            display: flex;
+            align-items: center;
+            justify-content: var(--logo-box-justify);
+            font-size: 22px;
+            box-shadow: 0 4px 15px var(--accent-glow);
+            overflow: hidden;
+        }
+
+        .logo-main-icon {
+            width: var(--logo-main-icon-width); /* ปรับความกว้างไอคอนหลักแบบละเอียด */
+            height: var(--logo-main-icon-height); /* ปรับความสูงไอคอนหลักแบบละเอียด */
+            display: block;
+            background-image: url('icon.png');
+            background-size: var(--logo-main-icon-sprite-size-x) var(--logo-main-icon-sprite-size-y);
+            background-position: var(--logo-main-icon-sprite-pos-x) var(--logo-main-icon-sprite-pos-y);
+            background-repeat: no-repeat;
+            margin-left: var(--logo-main-icon-offset); /* จุดนี้ปรับตำแหน่งซ้ายขวา (เปลี่ยนตัวเลขใน --logo-main-icon-offset) */
+            margin-top: var(--logo-main-icon-offset-y); /* จุดนี้ปรับตำแหน่งขึ้นลง (เปลี่ยนตัวเลขใน --logo-main-icon-offset-y) */
+            transform: rotate(var(--logo-main-icon-rotate)) scaleX(var(--logo-main-icon-scale-x)) scaleY(var(--logo-main-icon-scale-y));
+            transform-origin: center;
+            opacity: var(--logo-main-icon-opacity);
+        }
+
+        .logo-text h1 {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .logo-text span {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px 10px 38px;
+            color: var(--text-primary);
+            font-size: 14px;
+            width: 220px;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+            width: 280px;
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-box::before {
+            content: '';
+            position: absolute;
+            left: calc(10px + var(--search-icon-offset-x));
+            top: calc(50% + var(--search-icon-offset-y));
+            transform: translateY(-50%);
+            width: var(--search-icon-size);
+            height: var(--search-icon-size);
+            background-image: url('icon.png');
+            background-size: 400% 200%;
+            background-position: 0% 100%;
+            background-repeat: no-repeat;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg-glass);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-active);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(124, 58, 237, 0.15));
+            border-color: var(--border-active);
+        }
+
+        .btn-accent:hover {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.25), rgba(124, 58, 237, 0.25));
+        }
+
+        .btn-accent.active {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(124, 58, 237, 0.3));
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: var(--radius-xs);
+        }
+
+        .panel-title .sprite-icon {
+            width: var(--panel-title-icon-size); /* จุดนี้ปรับขนาดไอคอนหัวข้อ */
+            height: var(--panel-title-icon-size);
+            transform: translate(var(--panel-title-icon-offset-x), var(--panel-title-icon-offset-y)); /* จุดนี้ปรับตำแหน่งซ้ายขวา/ขึ้นลงไอคอนหัวข้อ */
+        }
+
+        #refreshBtn .sprite-icon.ico-refresh {
+            width: var(--refresh-btn-icon-size); /* ปรับขนาดไอคอนปุ่มรีเฟรช */
+            height: var(--refresh-btn-icon-size);
+            transform: translate(var(--refresh-btn-icon-offset-x), var(--refresh-btn-icon-offset-y)); /* ปรับตำแหน่งไอคอนปุ่มรีเฟรช */
+        }
+
+        #autoRefreshBtn .sprite-icon.ico-bolt {
+            width: var(--auto-btn-icon-size); /* ปรับขนาดไอคอนปุ่มอัตโนมัติ */
+            height: var(--auto-btn-icon-size);
+            transform: translate(var(--auto-btn-icon-offset-x), var(--auto-btn-icon-offset-y)); /* ปรับตำแหน่งไอคอนปุ่มอัตโนมัติ */
+        }
+
+        #refreshBtn.btn-loading .sprite-icon.ico-refresh {
+            animation: btn-icon-spin 0.8s linear infinite;
+            transform-origin: var(--refresh-spin-origin-x) var(--refresh-spin-origin-y);
+            will-change: transform;
+        }
+
+        @keyframes btn-icon-spin {
+            from {
+                transform: translate(var(--refresh-spin-offset-x), var(--refresh-spin-offset-y)) rotate(0deg);
+            }
+            to {
+                transform: translate(var(--refresh-spin-offset-x), var(--refresh-spin-offset-y)) rotate(360deg);
+            }
+        }
+
+        .btn-sm .sprite-icon,
+        .filter-chip .sprite-icon {
+            width: var(--btn-sm-icon-size); /* จุดนี้ปรับขนาดไอคอนปุ่มเล็ก/ชิป */
+            height: var(--btn-sm-icon-size);
+            transform: translate(var(--btn-sm-icon-offset-x), var(--btn-sm-icon-offset-y)); /* จุดนี้ปรับตำแหน่งซ้ายขวา/ขึ้นลงไอคอนปุ่มเล็ก/ชิป */
+        }
+
+        #refreshMsgBtn .sprite-icon.ico-refresh {
+            width: var(--msg-refresh-icon-size); /* ปรับขนาดไอคอนปุ่มรีเฟรชข้อความ */
+            height: var(--msg-refresh-icon-size);
+            transform: translate(var(--msg-refresh-icon-offset-x), var(--msg-refresh-icon-offset-y)); /* ปรับตำแหน่งไอคอนปุ่มรีเฟรชข้อความ */
+        }
+
+        #refreshMsgBtn.btn-loading .sprite-icon.ico-refresh {
+            animation: msg-refresh-icon-spin 0.8s linear infinite;
+            transform-origin: var(--msg-refresh-spin-origin-x) var(--msg-refresh-spin-origin-y);
+            will-change: transform;
+        }
+
+        @keyframes msg-refresh-icon-spin {
+            from {
+                transform: translate(var(--msg-refresh-spin-offset-x), var(--msg-refresh-spin-offset-y)) rotate(0deg);
+            }
+            to {
+                transform: translate(var(--msg-refresh-spin-offset-x), var(--msg-refresh-spin-offset-y)) rotate(360deg);
+            }
+        }
+
+        /* ============ STATUS BAR ============ */
+        .status-bar {
+            max-width: 1400px;
+            margin: 12px auto 0;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.online {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--green);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-badge.loading {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--orange);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .status-badge.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--red);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* ============ MAIN LAYOUT ============ */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px 24px 0;
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 20px;
+            /* ล็อกความสูงให้พอดีหน้าจอ ไม่ให้หน้าเว็บเลื่อนทั้งหน้า */
+            height: calc(100vh - 120px);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============ NUMBERS PANEL ============ */
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            /* ล็อกให้ panel ไม่เกินพื้นที่ grid */
+            min-height: 0;
+            max-height: 100%;
+        }
+
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .panel-title {
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-count {
+            background: var(--accent-glow);
+            color: var(--accent);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* Country filter */
+        .country-filter-wrapper {
+            position: relative;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .country-filter-arrow {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: var(--country-arrow-btn-width);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 5;
+            border: none;
+            background: transparent;
+            padding: 0;
+            transition: opacity 0.2s, transform 0.15s;
+            overflow: hidden;
+        }
+
+        .country-filter-arrow:hover {
+            transform: scale(1.15);
+        }
+
+        .country-filter-arrow:active {
+            transform: scale(0.95);
+        }
+
+        .country-filter-arrow.left {
+            left: 0;
+            background: linear-gradient(to right, var(--bg-card) 60%, transparent);
+        }
+
+        .country-filter-arrow.right {
+            right: 0;
+            background: linear-gradient(to left, var(--bg-card) 60%, transparent);
+        }
+
+        .country-filter-arrow img {
+            height: var(--country-arrow-icon-size);
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            transform: translate(var(--country-arrow-icon-offset-x), var(--country-arrow-icon-offset-y));
+        }
+
+        .country-filter-arrow.left img {
+            /* Show only left arrow (yellow) */
+            width: auto;
+            max-width: none;
+            clip-path: inset(0 50% 0 0);
+            margin-right: -50%;
+        }
+
+        .country-filter-arrow.right img {
+            /* Show only right arrow (green) */
+            width: auto;
+            max-width: none;
+            clip-path: inset(0 0 0 50%);
+            margin-left: -50%;
+        }
+
+        .country-filter-arrow.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .country-filter {
+            padding: 12px calc(var(--country-arrow-btn-width) + 4px);
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            scroll-behavior: smooth;
+        }
+
+        .country-filter::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+
+        .filter-chip:hover, .filter-chip.active {
+            background: var(--accent-glow);
+            border-color: var(--border-active);
+            color: var(--accent);
+        }
+
+        /* Numbers list */
+        .numbers-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.1) transparent;
+            /* สำคัญ: ให้เลื่อนภายใน panel เท่านั้น */
+            min-height: 0;
+        }
+
+        .numbers-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .numbers-list::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+
+        .number-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            margin-bottom: 4px;
+        }
+
+        .number-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border);
+        }
+
+        .number-card.active {
+            background: rgba(0, 212, 255, 0.08);
+            border-color: var(--border-active);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.05);
+        }
+
+        .number-flag {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            border-radius: 6px;
+            object-fit: contain;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .number-flag-emoji {
+            font-size: 28px;
+            line-height: 1;
+            min-width: 36px;
+            width: 36px;
+            text-align: center;
+        }
+
+        /* Icon sprite from icon.png  (4x2 grid) */
+        .sprite-icon {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            background-image: url('icon.png');
+            background-size: 400% 200%;
+            background-repeat: no-repeat;
+            vertical-align: middle;
+            image-rendering: auto;
+        }
+        .sprite-icon.ico-refresh   { background-position: 0% 0%; }
+        .sprite-icon.ico-back      { background-position: 33.33% 0%; }
+        .sprite-icon.ico-forward   { background-position: 66.66% 0%; }
+        .sprite-icon.ico-phone     { background-position: 100% 0%; }
+        .sprite-icon.ico-search    { background-position: 0% 100%; }
+        .sprite-icon.ico-bolt      { background-position: 33.33% 100%; }
+        .sprite-icon.ico-globe     { background-position: 66.66% 100%; }
+        .sprite-icon.ico-trash     { background-position: 100% 100%; }
+
+        /* Icon sprite from icon2.png (3x1 grid: star-yellow | star-black | copy) */
+        .sprite-icon2 {
+            display: inline-block;
+            background-image: url('icon2.png');
+            background-size: 300% 100%;
+            background-repeat: no-repeat;
+            vertical-align: middle;
+            image-rendering: auto;
+            pointer-events: none;
+        }
+        .sprite-icon2.ico2-star-yellow {
+            width: var(--ico2-star-yellow-size);
+            height: var(--ico2-star-yellow-size);
+            background-position: 0% 0%;
+            transform: translate(var(--ico2-star-yellow-offset-x), var(--ico2-star-yellow-offset-y)) scaleX(var(--ico2-star-yellow-scale-x)) scaleY(var(--ico2-star-yellow-scale-y));
+            transform-origin: center;
+        }   /* ดาวเหลือง — ปักหมุดแล้ว */
+        .sprite-icon2.ico2-star-black {
+            width: var(--ico2-star-black-size);
+            height: var(--ico2-star-black-size);
+            background-position: 50% 0%;
+            transform: translate(var(--ico2-star-black-offset-x), var(--ico2-star-black-offset-y)) scaleX(var(--ico2-star-black-scale-x)) scaleY(var(--ico2-star-black-scale-y));
+            transform-origin: center;
+        }  /* ดาวดำ — ยังไม่ปักหมุด */
+        .sprite-icon2.ico2-copy {
+            width: var(--ico2-copy-size);
+            height: var(--ico2-copy-size);
+            background-position: 100% 0%;
+            transform: translate(var(--ico2-copy-offset-x), var(--ico2-copy-offset-y)) scaleX(var(--ico2-copy-scale-x)) scaleY(var(--ico2-copy-scale-y));
+            transform-origin: center;
+        } /* ไอคอน copy */
+
+        .filter-flag {
+            width: 18px;
+            height: 18px;
+            border-radius: 3px;
+            object-fit: contain;
+            vertical-align: middle;
+        }
+
+        .number-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .number-phone {
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Inter', monospace;
+            letter-spacing: 0.3px;
+            color: var(--text-primary);
+        }
+
+        .number-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 3px;
+        }
+
+        .number-country {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .number-source {
+            font-size: 10px;
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.05);
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
+
+        .number-copy {
+            padding: var(--copy-btn-padding, 5px);
+            border-radius: var(--radius-xs);
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            line-height: 0;
+            transition: all 0.2s;
+        }
+
+        .number-copy:hover {
+            background: var(--accent-glow);
+            border-color: var(--border-active);
+        }
+
+        .number-copy.copied {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        /* ปุ่มดาว/ปักหมุด */
+        .number-star {
+            padding: var(--star-btn-padding, 5px);
+            border-radius: var(--radius-xs);
+            border: 1px solid transparent;
+            background: transparent;
+            cursor: pointer;
+            line-height: 0;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .number-star:hover {
+            background: rgba(245, 158, 11, 0.12);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .number-star.pinned {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.25);
+        }
+
+        /* การ์ดที่ปักหมุดแล้วมีขอบซ้ายสีทอง */
+        .number-card.pinned-card {
+            border-left: 3px solid rgba(245, 158, 11, 0.6) !important;
+        }
+
+        /* ============ MESSAGES PANEL ============ */
+        .messages-panel {
+            display: flex;
+            flex-direction: column;
+            /* ล็อกให้ messages panel ไม่เกินพื้นที่ */
+            min-height: 0;
+            max-height: 100%;
+        }
+
+        .selected-number-bar {
+            padding: 14px 20px;
+            background: rgba(0, 212, 255, 0.05);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .selected-number-bar .flag {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            object-fit: contain;
+        }
+
+        .selected-number-bar .flag-emoji {
+            font-size: 24px;
+        }
+
+        .selected-number-bar .phone {
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Inter', monospace;
+        }
+
+        .selected-number-bar .source-tag {
+            font-size: 11px;
+            color: var(--accent);
+            background: var(--accent-glow);
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-left: auto;
+        }
+
+        .messages-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.1) transparent;
+            /* สำคัญ: ให้เลื่อนภายใน panel เท่านั้น */
+            min-height: 0;
+        }
+
+        .msg-item {
+            padding: 16px 20px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            margin-bottom: 10px;
+            transition: all 0.2s;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .msg-item:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .msg-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .msg-from {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .msg-time {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .msg-text {
+            font-size: 14px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            word-break: break-word;
+        }
+
+        .msg-text .code-highlight {
+            background: rgba(0, 212, 255, 0.12);
+            color: var(--accent);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Inter', monospace;
+            font-weight: 600;
+        }
+
+        /* ============ EMPTY / LOADING STATES ============ */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 30px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .empty-state p {
+            font-size: 13px;
+            line-height: 1.6;
+            max-width: 300px;
+        }
+
+        .loading-spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-glass) 25%, rgba(255,255,255,0.08) 50%, var(--bg-glass) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: var(--radius-xs);
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            margin-bottom: 4px;
+        }
+
+        .skeleton-circle {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+        }
+
+        .skeleton-line {
+            height: 14px;
+            border-radius: 4px;
+        }
+
+        .skeleton-line.w-60 { width: 60%; }
+        .skeleton-line.w-40 { width: 40%; }
+        .skeleton-line.w-80 { width: 80%; }
+
+        /* ============ FALLBACK SERVICES ============ */
+        .fallback-section {
+            max-width: 1400px;
+            margin: 0 auto 40px;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .fallback-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .fallback-header h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .fallback-header .sprite-icon {
+            width: var(--fallback-header-icon-size); /* จุดนี้ปรับขนาดไอคอนหัวข้อบริการเสริม */
+            height: var(--fallback-header-icon-size);
+            transform: translate(var(--fallback-header-icon-offset-x), var(--fallback-header-icon-offset-y)); /* จุดนี้ปรับตำแหน่งซ้ายขวา/ขึ้นลงไอคอนหัวข้อบริการเสริม */
+        }
+
+        .fallback-line {
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .service-card {
+            padding: 16px 18px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: block;
+        }
+
+        .service-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-active);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .service-card .name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .service-name-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .service-flag {
+            width: 18px;
+            height: 18px;
+            border-radius: 3px;
+            object-fit: contain;
+            background: rgba(255,255,255,0.05);
+            flex: 0 0 auto;
+        }
+
+        .service-flag-emoji {
+            font-size: 15px;
+            line-height: 1;
+            width: 18px;
+            text-align: center;
+            flex: 0 0 auto;
+        }
+
+        .service-card .desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .service-card .arrow {
+            float: right;
+            color: var(--accent);
+            font-size: 16px;
+        }
+
+        /* ============ TOAST ============ */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            padding: 12px 20px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 13px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            animation: toast-in 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast.success { border-color: rgba(16, 185, 129, 0.3); }
+        .toast.error { border-color: rgba(239, 68, 68, 0.3); }
+
+        @keyframes toast-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes toast-out {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(20px); }
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 900px) {
+            .main {
+                grid-template-columns: 1fr;
+                padding: 12px 12px 30px;
+                height: auto;
+                min-height: 0;
+            }
+
+            .panel {
+                max-height: 50vh;
+            }
+
+            .header-inner {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-controls {
+                flex-wrap: wrap;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .search-box input:focus {
+                width: 100%;
+            }
+
+            .status-bar {
+                padding: 0 12px;
+            }
+
+            .fallback-section {
+                padding: 0 12px;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scrollbar styles for messages */
+        .messages-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages-list::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo">
+                <div class="logo-icon"><span class="logo-main-icon"></span></div>
+                <div class="logo-text">
+                    <h1>C2X เบอร์โทรชั่วคราว</h1>
+                    <span>Temporary SMS Numbers</span>
+                </div>
+            </div>
+            <div class="header-controls">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="ค้นหาเบอร์หรือประเทศ...">
+                </div>
+                <button class="btn" onclick="refreshNumbers()" id="refreshBtn">
+                    <span class="sprite-icon ico-refresh"></span> รีเฟรช
+                </button>
+                <button class="btn btn-accent" onclick="toggleAutoRefresh()" id="autoRefreshBtn">
+                    <span class="sprite-icon ico-bolt"></span> อัตโนมัติ
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- STATUS BAR -->
+    <div class="status-bar" id="statusBar">
+        <div class="status-badge loading" id="statusBadge">
+            <div class="status-dot"></div>
+            <span id="statusText">กำลังโหลด...</span>
+        </div>
+        <span style="font-size: 12px; color: var(--text-muted);" id="lastUpdate"></span>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main">
+        <!-- NUMBERS PANEL -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="sprite-icon ico-phone"></span> เบอร์ที่ใช้ได้
+                    <span class="panel-count" id="numberCount">0</span>
+                </div>
+                <button class="btn btn-sm" onclick="clearCache()"><span class="sprite-icon ico-trash"></span> ล้างแคช</button>
+            </div>
+
+            <!-- Country Filter -->
+            <div class="country-filter-wrapper">
+                <button class="country-filter-arrow left hidden" id="filterArrowLeft" onclick="scrollFilter('left')">
+                    <img src="icon1.png" alt="←">
+                </button>
+                <div class="country-filter" id="countryFilter">
+                    <button class="filter-chip active" data-country="all" onclick="filterCountry('all', this)"><span class="sprite-icon ico-globe"></span> ทั้งหมด</button>
+                </div>
+                <button class="country-filter-arrow right" id="filterArrowRight" onclick="scrollFilter('right')">
+                    <img src="icon1.png" alt="→">
+                </button>
+            </div>
+
+            <!-- Numbers List -->
+            <div class="numbers-list" id="numbersList">
+                <div class="empty-state" id="numbersLoading">
+                    <div class="loading-spinner"></div>
+                    <h3>กำลังโหลดเบอร์...</h3>
+                    <p>กำลังดึงข้อมูลจากหลายแหล่ง<br>อาจใช้เวลาสักครู่</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- MESSAGES PANEL -->
+        <div class="panel messages-panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="sprite-icon ico-search"></span> ข้อความ SMS
+                    <span class="panel-count" id="msgCount">0</span>
+                </div>
+                <button class="btn btn-sm" onclick="refreshMessages()" id="refreshMsgBtn" style="display:none;">
+                    <span class="sprite-icon ico-refresh"></span> รีเฟรช
+                </button>
+            </div>
+
+            <div id="selectedNumberBar" class="selected-number-bar" style="display: none;">
+                <span class="flag" id="selectedFlag"></span>
+                <span class="phone" id="selectedPhone"></span>
+                <span class="source-tag" id="selectedSource"></span>
+            </div>
+
+            <div class="messages-list" id="messagesList">
+                <div class="empty-state">
+                    <div class="icon">📨</div>
+                    <h3>เลือกเบอร์เพื่อดูข้อความ</h3>
+                    <p>คลิกที่เบอร์โทรศัพท์ด้านซ้ายเพื่อดูข้อความ SMS ที่ได้รับ</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FALLBACK SERVICES -->
+    <div class="fallback-section">
+        <div class="fallback-header">
+            <h2><span class="sprite-icon ico-globe"></span> บริการเสริม (เปิดในแท็บใหม่)</h2>
+            <div class="fallback-line"></div>
+        </div>
+        <div class="services-grid" id="servicesGrid">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+
+        // ==================== CONFIG ====================
+        const CORS_PROXIES = [
+            url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+            url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+            url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+        ];
+
+        const FLAG_IMG_MAP = {
+            'TH': 'Flags_of_different_countries/flag_Thailand_232.png',
+            'US': 'Flags_of_different_countries/flag_United_States_248.png',
+            'GB': 'Flags_of_different_countries/flag_United_Kingdom_89.png',
+            'FR': 'Flags_of_different_countries/flag_France_87.png',
+            'DE': 'Flags_of_different_countries/flag_Germany_66.png',
+            'JP': 'Flags_of_different_countries/flag_Japan_127.png',
+            'CN': 'Flags_of_different_countries/flag_China_56.png',
+            'IN': 'Flags_of_different_countries/flag_India_118.png',
+            'RU': 'Flags_of_different_countries/flag_Russia_204.png',
+            'AU': 'Flags_of_different_countries/flag_Australia_21.png',
+            'BR': 'Flags_of_different_countries/flag_Brazil_39.png',
+            'ES': 'Flags_of_different_countries/flag_Spain_79.png',
+            'IT': 'Flags_of_different_countries/flag_Italy_123.png',
+            'KR': 'Flags_of_different_countries/flag_South_Korea_135.png',
+            'MY': 'Flags_of_different_countries/flag_Malaysia_171.png',
+            'SG': 'Flags_of_different_countries/flag_Singapore_211.png',
+            'ID': 'Flags_of_different_countries/flag_Indonesia_114.png',
+            'PH': 'Flags_of_different_countries/flag_Philippines_190.png',
+            'VN': 'Flags_of_different_countries/flag_Vietnam_256.png',
+            'SE': 'Flags_of_different_countries/flag_Sweden_210.png',
+            'NO': 'Flags_of_different_countries/flag_Norway_180.png',
+            'PL': 'Flags_of_different_countries/flag_Poland_192.png',
+            'UA': 'Flags_of_different_countries/flag_Ukraine_244.png',
+            'NL': 'Flags_of_different_countries/flag_Netherlands_179.png',
+            'PT': 'Flags_of_different_countries/flag_Portugal_197.png',
+            'CH': 'Flags_of_different_countries/flag_Switzerland_51.png',
+            'AT': 'Flags_of_different_countries/flag_Austria_20.png',
+            'BE': 'Flags_of_different_countries/flag_Belgium_28.png',
+            'DK': 'Flags_of_different_countries/flag_Denmark_69.png',
+            'FI': 'Flags_of_different_countries/flag_Finland_82.png',
+            'HU': 'Flags_of_different_countries/flag_Hungary_112.png',
+            'CZ': 'Flags_of_different_countries/flag_Czechia_65.png',
+            'RO': 'Flags_of_different_countries/flag_Romania_202.png',
+            'TR': 'Flags_of_different_countries/flag_T\u00FCrkiye_239.png',
+            'MX': 'Flags_of_different_countries/flag_Mexico_170.png',
+            'NG': 'Flags_of_different_countries/flag_Nigeria_177.png',
+            'ZA': 'Flags_of_different_countries/flag_South_Africa_263.png',
+            'EG': 'Flags_of_different_countries/flag_Egypt_76.png',
+            'AE': 'Flags_of_different_countries/flag_United_Arab_Emirates_10.png',
+            'IL': 'Flags_of_different_countries/flag_Israel_116.png',
+            'SA': 'Flags_of_different_countries/flag_Saudi_Arabia_206.png',
+            'HK': 'Flags_of_different_countries/flag_Hong_Kong_SAR_China_107.png',
+            'TW': 'Flags_of_different_countries/flag_Taiwan_242.png',
+            'IE': 'Flags_of_different_countries/flag_Ireland_115.png',
+            'EE': 'Flags_of_different_countries/flag_Estonia_75.png',
+            'LT': 'Flags_of_different_countries/flag_Lithuania_146.png',
+            'LV': 'Flags_of_different_countries/flag_Latvia_148.png',
+            'GR': 'Flags_of_different_countries/flag_Greece_101.png',
+            'AZ': 'Flags_of_different_countries/flag_Azerbaijan_24.png',
+            'UZ': 'Flags_of_different_countries/flag_Uzbekistan_250.png',
+            'KH': 'Flags_of_different_countries/flag_Cambodia_130.png',
+            'LA': 'Flags_of_different_countries/flag_Laos_139.png',
+            'MM': 'Flags_of_different_countries/flag_Myanmar_(Burma)_159.png',
+            'BD': 'Flags_of_different_countries/flag_Bangladesh_27.png',
+            'PK': 'Flags_of_different_countries/flag_Pakistan_191.png',
+            'LK': 'Flags_of_different_countries/flag_Sri_Lanka_143.png',
+            'NP': 'Flags_of_different_countries/flag_Nepal_181.png',
+            'CA': 'Flags_of_different_countries/flag_Canada_46.png',
+            'AR': 'Flags_of_different_countries/flag_Argentina_18.png',
+            'CO': 'Flags_of_different_countries/flag_Colombia_57.png',
+            'PE': 'Flags_of_different_countries/flag_Peru_187.png',
+            'CL': 'Flags_of_different_countries/flag_Chile_54.png',
+        };
+
+        const COUNTRY_MAP = {
+            '+66':  { name: '\u0E44\u0E17\u0E22', code: 'TH' },
+            '+1':   { name: '\u0E2A\u0E2B\u0E23\u0E31\u0E10\u0E2D\u0E40\u0E21\u0E23\u0E34\u0E01\u0E32', code: 'US' },
+            '+44':  { name: '\u0E2A\u0E2B\u0E23\u0E32\u0E0A\u0E2D\u0E32\u0E13\u0E32\u0E08\u0E31\u0E01\u0E23', code: 'GB' },
+            '+33':  { name: '\u0E1D\u0E23\u0E31\u0E48\u0E07\u0E40\u0E28\u0E2A', code: 'FR' },
+            '+49':  { name: '\u0E40\u0E22\u0E2D\u0E23\u0E21\u0E19\u0E35', code: 'DE' },
+            '+81':  { name: '\u0E0D\u0E35\u0E48\u0E1B\u0E38\u0E48\u0E19', code: 'JP' },
+            '+86':  { name: '\u0E08\u0E35\u0E19', code: 'CN' },
+            '+91':  { name: '\u0E2D\u0E34\u0E19\u0E40\u0E14\u0E35\u0E22', code: 'IN' },
+            '+7':   { name: '\u0E23\u0E31\u0E2A\u0E40\u0E0B\u0E35\u0E22', code: 'RU' },
+            '+61':  { name: '\u0E2D\u0E2D\u0E2A\u0E40\u0E15\u0E23\u0E40\u0E25\u0E35\u0E22', code: 'AU' },
+            '+55':  { name: '\u0E1A\u0E23\u0E32\u0E0B\u0E34\u0E25', code: 'BR' },
+            '+34':  { name: '\u0E2A\u0E40\u0E1B\u0E19', code: 'ES' },
+            '+39':  { name: '\u0E2D\u0E34\u0E15\u0E32\u0E25\u0E35', code: 'IT' },
+            '+82':  { name: '\u0E40\u0E01\u0E32\u0E2B\u0E25\u0E35\u0E43\u0E15\u0E49', code: 'KR' },
+            '+60':  { name: '\u0E21\u0E32\u0E40\u0E25\u0E40\u0E0B\u0E35\u0E22', code: 'MY' },
+            '+65':  { name: '\u0E2A\u0E34\u0E07\u0E04\u0E42\u0E1B\u0E23\u0E4C', code: 'SG' },
+            '+62':  { name: '\u0E2D\u0E34\u0E19\u0E42\u0E14\u0E19\u0E35\u0E40\u0E0B\u0E35\u0E22', code: 'ID' },
+            '+63':  { name: '\u0E1F\u0E34\u0E25\u0E34\u0E1B\u0E1B\u0E34\u0E19\u0E2A\u0E4C', code: 'PH' },
+            '+84':  { name: '\u0E40\u0E27\u0E35\u0E22\u0E14\u0E19\u0E32\u0E21', code: 'VN' },
+            '+46':  { name: '\u0E2A\u0E27\u0E35\u0E40\u0E14\u0E19', code: 'SE' },
+            '+47':  { name: '\u0E19\u0E2D\u0E23\u0E4C\u0E40\u0E27\u0E22\u0E4C', code: 'NO' },
+            '+48':  { name: '\u0E42\u0E1B\u0E41\u0E25\u0E19\u0E14\u0E4C', code: 'PL' },
+            '+380': { name: '\u0E22\u0E39\u0E40\u0E04\u0E23\u0E19', code: 'UA' },
+            '+31':  { name: '\u0E40\u0E19\u0E40\u0E18\u0E2D\u0E23\u0E4C\u0E41\u0E25\u0E19\u0E14\u0E4C', code: 'NL' },
+            '+351': { name: '\u0E42\u0E1B\u0E23\u0E15\u0E38\u0E40\u0E01\u0E2A', code: 'PT' },
+            '+41':  { name: '\u0E2A\u0E27\u0E34\u0E15\u0E40\u0E0B\u0E2D\u0E23\u0E4C\u0E41\u0E25\u0E19\u0E14\u0E4C', code: 'CH' },
+            '+43':  { name: '\u0E2D\u0E2D\u0E2A\u0E40\u0E15\u0E23\u0E35\u0E22', code: 'AT' },
+            '+32':  { name: '\u0E40\u0E1A\u0E25\u0E40\u0E22\u0E35\u0E22\u0E21', code: 'BE' },
+            '+45':  { name: '\u0E40\u0E14\u0E19\u0E21\u0E32\u0E23\u0E4C\u0E01', code: 'DK' },
+            '+358': { name: '\u0E1F\u0E34\u0E19\u0E41\u0E25\u0E19\u0E14\u0E4C', code: 'FI' },
+            '+36':  { name: '\u0E2E\u0E31\u0E07\u0E01\u0E32\u0E23\u0E35', code: 'HU' },
+            '+420': { name: '\u0E40\u0E0A\u0E47\u0E01', code: 'CZ' },
+            '+40':  { name: '\u0E42\u0E23\u0E21\u0E32\u0E40\u0E19\u0E35\u0E22', code: 'RO' },
+            '+90':  { name: '\u0E15\u0E38\u0E23\u0E01\u0E35', code: 'TR' },
+            '+52':  { name: '\u0E40\u0E21\u0E47\u0E01\u0E0B\u0E34\u0E42\u0E01', code: 'MX' },
+            '+234': { name: '\u0E44\u0E19\u0E08\u0E35\u0E40\u0E23\u0E35\u0E22', code: 'NG' },
+            '+27':  { name: '\u0E41\u0E2D\u0E1F\u0E23\u0E34\u0E01\u0E32\u0E43\u0E15\u0E49', code: 'ZA' },
+            '+20':  { name: '\u0E2D\u0E35\u0E22\u0E34\u0E1B\u0E15\u0E4C', code: 'EG' },
+            '+971': { name: 'UAE', code: 'AE' },
+            '+972': { name: '\u0E2D\u0E34\u0E2A\u0E23\u0E32\u0E40\u0E2D\u0E25', code: 'IL' },
+            '+966': { name: '\u0E0B\u0E32\u0E2D\u0E38\u0E14\u0E34\u0E2D\u0E32\u0E23\u0E30\u0E40\u0E1A\u0E35\u0E22', code: 'SA' },
+            '+852': { name: '\u0E2E\u0E48\u0E2D\u0E07\u0E01\u0E07', code: 'HK' },
+            '+886': { name: '\u0E44\u0E15\u0E49\u0E2B\u0E27\u0E31\u0E19', code: 'TW' },
+            '+353': { name: '\u0E44\u0E2D\u0E23\u0E4C\u0E41\u0E25\u0E19\u0E14\u0E4C', code: 'IE' },
+            '+372': { name: '\u0E40\u0E2D\u0E2A\u0E42\u0E15\u0E40\u0E19\u0E35\u0E22', code: 'EE' },
+            '+370': { name: '\u0E25\u0E34\u0E17\u0E31\u0E27\u0E40\u0E19\u0E35\u0E22', code: 'LT' },
+            '+371': { name: '\u0E25\u0E31\u0E15\u0E40\u0E27\u0E35\u0E22', code: 'LV' },
+            '+30':  { name: '\u0E01\u0E23\u0E35\u0E0B', code: 'GR' },
+            '+994': { name: '\u0E2D\u0E32\u0E40\u0E0B\u0E2D\u0E23\u0E4C\u0E44\u0E1A\u0E08\u0E32\u0E19', code: 'AZ' },
+            '+998': { name: '\u0E2D\u0E38\u0E0B\u0E40\u0E1A\u0E01\u0E34\u0E2A\u0E16\u0E32\u0E19', code: 'UZ' },
+            '+855': { name: '\u0E01\u0E31\u0E21\u0E1E\u0E39\u0E0A\u0E32', code: 'KH' },
+            '+856': { name: '\u0E25\u0E32\u0E27', code: 'LA' },
+            '+95':  { name: '\u0E40\u0E21\u0E35\u0E22\u0E19\u0E21\u0E32\u0E23\u0E4C', code: 'MM' },
+            '+880': { name: '\u0E1A\u0E31\u0E07\u0E01\u0E25\u0E32\u0E40\u0E17\u0E28', code: 'BD' },
+            '+92':  { name: '\u0E1B\u0E32\u0E01\u0E34\u0E2A\u0E16\u0E32\u0E19', code: 'PK' },
+            '+94':  { name: '\u0E28\u0E23\u0E35\u0E25\u0E31\u0E07\u0E01\u0E32', code: 'LK' },
+            '+977': { name: '\u0E40\u0E19\u0E1B\u0E32\u0E25', code: 'NP' },
+        };
+
+        const SMS24_COUNTRIES = [
+            'th','us','gb','fr','de','jp','cn','in','ru','au',
+            'br','es','it','kr','my','sg','id','ph','vn','se',
+            'no','pl','ua','nl','pt','ch','at','be','dk','fi',
+            'hu','cz','ro','tr','mx','ng','za','eg','ae','il',
+            'sa','hk','tw','ie','ee','lt','lv','gr','az','uz',
+            'kh','la','mm','bd','pk','lk','np','ca','ar','co',
+            'pe','cl'
+        ];
+
+        const FALLBACK_SERVICES = [
+            { name: 'SMS24 Thailand', url: 'https://sms24.me/en/numbers/TH/', desc: '\u0E40\u0E1A\u0E2D\u0E23\u0E4C\u0E44\u0E17\u0E22\u0E0A\u0E31\u0E48\u0E27\u0E04\u0E23\u0E32\u0E27', code: 'TH' },
+            { name: 'Quackr Thailand', url: 'https://quackr.io/virtual-number/thailand', desc: '\u0E40\u0E1A\u0E2D\u0E23\u0E4C\u0E44\u0E17\u0E22\u0E43\u0E0A\u0E49\u0E07\u0E32\u0E19\u0E44\u0E14\u0E49\u0E40\u0E25\u0E22', code: 'TH' },
+            { name: 'SMSToMe TH', url: 'https://smstome.com/country/thailand', desc: '\u0E40\u0E1A\u0E2D\u0E23\u0E4C\u0E44\u0E17\u0E22\u0E0A\u0E31\u0E48\u0E27\u0E04\u0E23\u0E32\u0E27', code: 'TH' },
+            { name: '7SIM Thailand', url: 'https://7sim.net/th/', desc: '\u0E40\u0E1A\u0E2D\u0E23\u0E4C\u0E44\u0E17\u0E22\u0E2A\u0E33\u0E2B\u0E23\u0E31\u0E1A\u0E22\u0E37\u0E19\u0E22\u0E31\u0E19 OTP', code: 'TH' },
+            { name: 'Temp-Number TH', url: 'https://temp-number.com/countries/thailand/', desc: '\u0E40\u0E1A\u0E2D\u0E23\u0E4C\u0E44\u0E17\u0E22\u0E0A\u0E31\u0E48\u0E27\u0E04\u0E23\u0E32\u0E27', code: 'TH' },
+            { name: 'Receive-SMSS', url: 'https://receive-smss.com/', desc: '\u0E40\u0E1A\u0E2D\u0E23\u0E4C\u0E1F\u0E23\u0E35\u0E2B\u0E25\u0E32\u0E22\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28' },
+            { name: 'ReceiveSMS.cc', url: 'https://receivesms.cc/', desc: '\u0E1A\u0E23\u0E34\u0E01\u0E32\u0E23\u0E23\u0E31\u0E1A SMS \u0E1F\u0E23\u0E35\u0E2D\u0E2D\u0E19\u0E44\u0E25\u0E19\u0E4C' },
+            { name: 'SMSReceiveFree', url: 'https://smsreceivefree.com/', desc: '\u0E23\u0E31\u0E1A SMS \u0E1F\u0E23\u0E35\u0E44\u0E21\u0E48\u0E08\u0E33\u0E01\u0E31\u0E14' },
+            { name: 'ReceiveSMS Online TH', url: 'https://receive-sms-online.info/Thailand/', desc: '\u0E40\u0E1A\u0E2D\u0E23\u0E4C\u0E44\u0E17\u0E22\u0E2D\u0E2D\u0E19\u0E44\u0E25\u0E19\u0E4C', code: 'TH' },
+            { name: 'AnonymSMS', url: 'https://anonymsms.com/', desc: '\u0E40\u0E1A\u0E2D\u0E23\u0E4C\u0E44\u0E21\u0E48\u0E23\u0E30\u0E1A\u0E38\u0E15\u0E31\u0E27\u0E15\u0E19' },
+        ];
+
+        const CACHE_TTL = 300000; // 5 min
+        const numberCache = { data: null, time: 0 };
+        const msgCache = {};
+
+        // ==================== STATE ====================
+        let allNumbers = [];
+        let filteredNumbers = [];
+        let selectedNumber = null;
+        let autoRefreshInterval = null;
+        let autoMsgRefreshInterval = null;
+        let isAutoRefresh = false;
+        const AUTO_REFRESH_STORAGE_KEY = 'autoRefreshEnabled';
+
+        let pinnedNumbers = new Set(JSON.parse(localStorage.getItem('pinnedNumbers') || '[]'));
+
+        function savePinnedNumbers() {
+            localStorage.setItem('pinnedNumbers', JSON.stringify([...pinnedNumbers]));
+        }
+
+        // ==================== CORS FETCH ====================
+        async function corsFetch(url, timeoutMs = 18000) {
+            for (const proxyFn of CORS_PROXIES) {
+                try {
+                    const proxyUrl = proxyFn(url);
+                    const controller = new AbortController();
+                    const timer = setTimeout(() => controller.abort(), timeoutMs);
+                    const resp = await fetch(proxyUrl, { signal: controller.signal });
+                    clearTimeout(timer);
+                    if (resp.ok) return await resp.text();
+                } catch (e) { continue; }
+            }
+            return null;
+        }
+
+        // ==================== COUNTRY DETECTION ====================
+        function codeToFlag(code) {
+            if (!code || code.length !== 2) return 'XX';
+            return String.fromCodePoint(code.charCodeAt(0) + 127397) + String.fromCodePoint(code.charCodeAt(1) + 127397);
+        }
+
+        function detectCountry(number) {
+            const prefixes = Object.keys(COUNTRY_MAP).sort((a, b) => b.length - a.length);
+            for (const prefix of prefixes) {
+                if (number.startsWith(prefix)) {
+                    const c = COUNTRY_MAP[prefix];
+                    return { flag: codeToFlag(c.code), name: c.name, code: c.code };
+                }
+            }
+            return { flag: 'XX', name: '\u0E2D\u0E37\u0E48\u0E19\u0E46', code: 'XX' };
+        }
+
+        function getFlagImg(code) {
+            return FLAG_IMG_MAP[code] || '';
+        }
+
+        function makeEntry(phone, label, msgUrl) {
+            if (!phone.startsWith('+')) phone = '+' + phone;
+            phone = phone.replace(/[\s.\-\(\)]/g, '');
+            if (phone.length < 8 || phone.length > 16) return null;
+            const country = detectCountry(phone);
+            return {
+                id: `${label}_${phone}`,
+                number: phone,
+                country: country.name,
+                flag: country.flag,
+                code: country.code,
+                flag_img: getFlagImg(country.code),
+                source: label,
+                msg_url: msgUrl,
+                is_thai: phone.startsWith('+66'),
+            };
+        }
+
+        // ==================== SCRAPERS ====================
+        async function scrapeReceiveSmss() {
+            const html = await corsFetch('https://receive-smss.com/');
+            if (!html) return [];
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const nums = [], seen = new Set();
+            doc.querySelectorAll('a[href]').forEach(a => {
+                const href = a.getAttribute('href') || '';
+                const m = href.match(/\/sms\/(\d+)/);
+                if (m) {
+                    const phone = '+' + m[1];
+                    if (!seen.has(phone)) {
+                        seen.add(phone);
+                        const fullUrl = 'https://receive-smss.com' + href;
+                        const e = makeEntry(phone, 'receive-smss', fullUrl);
+                        if (e) nums.push(e);
+                    }
+                }
+            });
+            return nums;
+        }
+
+        async function scrapeReceivesmsCc() {
+            const html = await corsFetch('https://receivesms.cc/');
+            if (!html) return [];
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const nums = [], seen = new Set();
+            doc.querySelectorAll('a[href]').forEach(a => {
+                const href = a.getAttribute('href') || '';
+                const text = a.textContent.trim();
+                let m = href.match(/\/(\d{8,15})\/?(?:\?|$)/);
+                if (!m) m = text.match(/\+(\d{7,14})/);
+                if (m) {
+                    const phone = '+' + m[1].replace(/\D/g, '');
+                    if (!seen.has(phone) && phone.length >= 9 && phone.length <= 16) {
+                        seen.add(phone);
+                        const fullUrl = href.startsWith('http') ? href : 'https://receivesms.cc' + href;
+                        const e = makeEntry(phone, 'receivesms-cc', fullUrl);
+                        if (e) nums.push(e);
+                    }
+                }
+            });
+            return nums;
+        }
+
+        async function scrapeSms24Page(url, label) {
+            const html = await corsFetch(url);
+            if (!html) return [];
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const nums = [], seen = new Set();
+            doc.querySelectorAll('a[href]').forEach(a => {
+                const href = a.getAttribute('href') || '';
+                let m = href.match(/\/(\d{7,15})\/?$/);
+                if (!m) m = (a.textContent || '').match(/\+(\d{7,14})/);
+                if (m) {
+                    const phone = '+' + m[1].replace(/\D/g, '');
+                    if (!seen.has(phone) && phone.length >= 9 && phone.length <= 16) {
+                        seen.add(phone);
+                        const rawNum = phone.replace('+', '');
+                        const msgUrl = `https://sms24.me/en/numbers/${rawNum}`;
+                        const e = makeEntry(phone, label, msgUrl);
+                        if (e) nums.push(e);
+                    }
+                }
+            });
+            if (nums.length === 0) {
+                for (const m of html.matchAll(/\+\d{9,14}/g)) {
+                    const phone = m[0];
+                    if (!seen.has(phone)) {
+                        seen.add(phone);
+                        const rawNum = phone.replace('+', '');
+                        const msgUrl = `https://sms24.me/en/numbers/${rawNum}`;
+                        const e = makeEntry(phone, label, msgUrl);
+                        if (e) nums.push(e);
+                    }
+                }
+            }
+            return nums;
+        }
+
+        async function scrapeSms24Country(slug) {
+            return await scrapeSms24Page(`https://sms24.me/en/countries/${slug}`, `sms24-${slug.toUpperCase()}`);
+        }
+
+        async function scrapeHs3x() {
+            const html = await corsFetch('https://hs3x.com/');
+            if (!html) return [];
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const nums = [], seen = new Set();
+            doc.querySelectorAll('a[href]').forEach(a => {
+                const href = a.getAttribute('href') || '';
+                const m = href.match(/\/(\d{8,15})\/?/);
+                if (m) {
+                    const phone = '+' + m[1];
+                    if (!seen.has(phone)) {
+                        seen.add(phone);
+                        const fullUrl = href.startsWith('http') ? href : 'https://hs3x.com' + href;
+                        const e = makeEntry(phone, 'hs3x', fullUrl);
+                        if (e) nums.push(e);
+                    }
+                }
+            });
+            return nums;
+        }
+
+        async function scrapeSmsreceivefree() {
+            const html = await corsFetch('https://smsreceivefree.com/');
+            if (!html) return [];
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const nums = [], seen = new Set();
+            doc.querySelectorAll('a[href]').forEach(a => {
+                const href = a.getAttribute('href') || '';
+                const combined = (a.textContent || '') + ' ' + href;
+                for (const m of combined.matchAll(/\+?\d{9,15}/g)) {
+                    let phone = m[0];
+                    if (!phone.startsWith('+')) phone = '+' + phone;
+                    if (!seen.has(phone) && phone.length >= 9 && phone.length <= 16) {
+                        seen.add(phone);
+                        const fullUrl = href.startsWith('http') ? href : 'https://smsreceivefree.com' + href;
+                        const e = makeEntry(phone, 'smsrcvfree', fullUrl);
+                        if (e) nums.push(e);
+                    }
+                }
+            });
+            return nums;
+        }
+
+        async function scrapeAnonymsmsPage(pageNum) {
+            const url = pageNum === 1 ? 'https://anonymsms.com/' : `https://anonymsms.com/page/${pageNum}/`;
+            const html = await corsFetch(url);
+            if (!html) return [];
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const nums = [], seen = new Set();
+            doc.querySelectorAll('a[href]').forEach(a => {
+                const href = a.getAttribute('href') || '';
+                const text = a.textContent.trim();
+                let m = href.match(/\/number\/(\d{8,15})\/?/);
+                if (!m) m = href.match(/\/(\d{8,15})\/?$/);
+                if (!m) m = text.match(/\+?(\d{8,15})/);
+                if (m) {
+                    const phone = '+' + m[1].replace(/\D/g, '');
+                    if (!seen.has(phone) && phone.length >= 9 && phone.length <= 16) {
+                        seen.add(phone);
+                        const fullUrl = href.startsWith('http') ? href : 'https://anonymsms.com' + href;
+                        const e = makeEntry(phone, `anonymsms-p${pageNum}`, fullUrl);
+                        if (e) nums.push(e);
+                    }
+                }
+            });
+            return nums;
+        }
+
+        async function scrapeGenericNumbers(url, label) {
+            const html = await corsFetch(url);
+            if (!html) return [];
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const nums = [], seen = new Set();
+            doc.querySelectorAll('a[href]').forEach(a => {
+                const combined = (a.textContent || '') + ' ' + (a.getAttribute('href') || '');
+                for (const m of combined.matchAll(/\+?\d{8,15}/g)) {
+                    let phone = m[0];
+                    if (!phone.startsWith('+')) phone = '+' + phone;
+                    phone = phone.replace(/[\s.\-\(\)]/g, '');
+                    if (!seen.has(phone) && phone.length >= 9 && phone.length <= 16) {
+                        seen.add(phone);
+                        const e = makeEntry(phone, label, url);
+                        if (e) nums.push(e);
+                    }
+                }
+            });
+            return nums;
+        }
+
+        // ==================== MESSAGE SCRAPER ====================
+        async function scrapeMessagesFromUrl(msgUrl) {
+            const ck = `msg_${msgUrl}`;
+            if (msgCache[ck] && (Date.now() - msgCache[ck].time) < CACHE_TTL) {
+                return msgCache[ck].data;
+            }
+
+            const html = await corsFetch(msgUrl);
+            if (!html) return [];
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const messages = [];
+
+            // Strategy 1: sms24.me format (dd/dt with label + span)
+            doc.querySelectorAll('dd').forEach(dd => {
+                const label = dd.querySelector('label');
+                let span = dd.querySelector('span[class*="text-break"]');
+                if (!span) span = dd.querySelector('span.placeholder');
+                if (label && span) {
+                    const senderA = label.querySelector('a');
+                    let sender = senderA ? senderA.textContent.trim() : label.textContent.trim();
+                    sender = sender.replace(/^From:\s*/i, '').trim();
+                    const text = span.textContent.trim();
+                    let timeStr = '';
+                    const prev = dd.previousElementSibling;
+                    if (prev && prev.tagName === 'DT') {
+                        const timeDiv = prev.querySelector('div[data-created]');
+                        if (timeDiv) {
+                            const rawTime = timeDiv.getAttribute('data-created') || '';
+                            timeStr = rawTime.substring(0, 16).replace('T', ' ');
+                        }
+                    }
+                    if (text && text.length > 2) {
+                        messages.push({ from: sender.substring(0, 60) || '\u0E44\u0E21\u0E48\u0E17\u0E23\u0E32\u0E1A', text, time: timeStr });
+                    }
+                }
+            });
+
+            // Strategy 2: Table rows
+            if (messages.length === 0) {
+                doc.querySelectorAll('table tr').forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 2) {
+                        const texts = Array.from(cells).map(c => c.textContent.trim());
+                        if (texts.some(t => t.length > 5)) {
+                            const msg = {
+                                from: (texts[0] || '').substring(0, 60) || '\u0E44\u0E21\u0E48\u0E17\u0E23\u0E32\u0E1A',
+                                text: texts[1] || '',
+                                time: texts.length >= 3 && texts[texts.length - 1].length < 60 ? texts[texts.length - 1] : '',
+                            };
+                            if (msg.text && msg.text.length > 2) messages.push(msg);
+                        }
+                    }
+                });
+            }
+
+            // Strategy 3: div/class patterns
+            if (messages.length === 0) {
+                const selectors = ['.message', '.msg', '.sms', '[class*="message"]', '[class*="msg"]', '[class*="sms"]', '[class*="inbox"]'];
+                for (const sel of selectors) {
+                    doc.querySelectorAll(sel).forEach(c => {
+                        const parts = c.textContent.split(/[\n\r|]+/).map(p => p.trim()).filter(p => p);
+                        if (parts.length >= 2) {
+                            messages.push({ from: parts[0].substring(0, 60), text: parts[1], time: parts.length >= 3 ? parts[parts.length - 1] : '' });
+                        }
+                    });
+                }
+            }
+
+            // Strategy 4: anonymsms format
+            if (messages.length === 0) {
+                doc.querySelectorAll('div[class*="message"], section[class*="message"], div[class*="sms"], div[class*="inbox"]').forEach(container => {
+                    container.querySelectorAll('div, li, p').forEach(item => {
+                        const text = item.textContent.trim();
+                        if (text.length > 10 && text.length < 500) {
+                            const parts = text.includes(':') ? text.split(':', 2) : [text];
+                            if (parts.length >= 2) {
+                                messages.push({ from: parts[0].substring(0, 60).trim(), text: parts[1].trim(), time: '' });
+                            } else {
+                                messages.push({ from: '\u0E44\u0E21\u0E48\u0E17\u0E23\u0E32\u0E1A', text: text.substring(0, 300), time: '' });
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Strategy 5: keyword blocks
+            if (messages.length === 0) {
+                doc.querySelectorAll('div, li, article').forEach(tag => {
+                    if (tag.querySelector('div, li, article')) return;
+                    const text = tag.textContent.trim();
+                    if (text.length > 15 && text.length < 500) {
+                        const pm = text.match(/\+?\d{5,15}/);
+                        if (pm && /code|verify|otp|sms|\u0E23\u0E2B\u0E31\u0E2A|\u0E22\u0E37\u0E19\u0E22\u0E31\u0E19/i.test(text)) {
+                            messages.push({ from: pm[0].substring(0, 30), text: text.substring(0, 300), time: '' });
+                        }
+                    }
+                });
+            }
+
+            // Deduplicate
+            const seenTexts = new Set();
+            const unique = [];
+            for (const msg of messages) {
+                const k = (msg.text || '').substring(0, 80);
+                if (k && !seenTexts.has(k)) {
+                    seenTexts.add(k);
+                    unique.push(msg);
+                }
+            }
+            const result = unique.slice(0, 50);
+            if (result.length > 0) {
+                msgCache[ck] = { data: result, time: Date.now() };
+            }
+            return result;
+        }
+
+        // ==================== INIT ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAllNumbers();
+            renderServices();
+            setupSearch();
+            setupFilterArrows();
+
+            const savedAutoRefresh = localStorage.getItem(AUTO_REFRESH_STORAGE_KEY) === '1';
+            if (savedAutoRefresh) {
+                setAutoRefresh(true, { silent: true });
+            }
+        });
+
+        // ==================== FILTER ARROW SCROLL ====================
+        function setupFilterArrows() {
+            const container = document.getElementById('countryFilter');
+            const updateArrows = () => {
+                const leftBtn = document.getElementById('filterArrowLeft');
+                const rightBtn = document.getElementById('filterArrowRight');
+                if (!leftBtn || !rightBtn) return;
+                leftBtn.classList.toggle('hidden', container.scrollLeft <= 5);
+                rightBtn.classList.toggle('hidden', container.scrollLeft + container.clientWidth >= container.scrollWidth - 5);
+            };
+
+            window.updateCountryFilterArrows = updateArrows;
+
+            container.addEventListener('scroll', updateArrows);
+
+            new ResizeObserver(updateArrows).observe(container);
+
+            const mutationObserver = new MutationObserver(updateArrows);
+            mutationObserver.observe(container, { childList: true, subtree: false });
+
+            updateArrows();
+            requestAnimationFrame(updateArrows);
+            setTimeout(updateArrows, 50);
+            setTimeout(updateArrows, 200);
+        }
+
+        function scrollFilter(direction) {
+            const container = document.getElementById('countryFilter');
+            const scrollAmount = 200;
+            container.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+        }
+
+        // ==================== LOAD NUMBERS (Client-Side Scraping) ====================
+        async function loadAllNumbers() {
+            // Check cache
+            if (numberCache.data && (Date.now() - numberCache.time) < CACHE_TTL) {
+                allNumbers = numberCache.data;
+                filteredNumbers = [...allNumbers];
+                renderNumbers(filteredNumbers);
+                updateCountryFilter();
+                document.getElementById('numberCount').textContent = allNumbers.length;
+                setStatus('online', `\u0E1E\u0E23\u0E49\u0E2D\u0E21\u0E43\u0E0A\u0E49\u0E07\u0E32\u0E19 \u2022 ${allNumbers.length} \u0E40\u0E1A\u0E2D\u0E23\u0E4C`);
+                showToast('\u2139\uFE0F \u0E43\u0E0A\u0E49\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25\u0E08\u0E32\u0E01\u0E41\u0E04\u0E0A', 'info');
+                updateLastUpdate();
+                return;
+            }
+
+            showNumbersLoading();
+            setStatus('loading', '\u0E01\u0E33\u0E25\u0E31\u0E07\u0E42\u0E2B\u0E25\u0E14\u0E40\u0E1A\u0E2D\u0E23\u0E4C...');
+            document.getElementById('numberCount').textContent = '0';
+            allNumbers = [];
+            filteredNumbers = [];
+
+            // Build scraper tasks
+            const tasks = [
+                { name: 'receive-smss', fn: scrapeReceiveSmss },
+                { name: 'receivesms-cc', fn: scrapeReceivesmsCc },
+                { name: 'hs3x', fn: scrapeHs3x },
+                { name: 'smsrcvfree', fn: scrapeSmsreceivefree },
+            ];
+
+            // SMS24 countries (1 page each)
+            for (const slug of SMS24_COUNTRIES) {
+                tasks.push({ name: `sms24-${slug.toUpperCase()}`, fn: () => scrapeSms24Country(slug) });
+            }
+
+            // Anonymsms pages
+            for (let p = 1; p <= 5; p++) {
+                tasks.push({ name: `anonymsms-p${p}`, fn: () => scrapeAnonymsmsPage(p) });
+            }
+
+            // Thai-specific
+            tasks.push({ name: 'rcv-online-TH', fn: () => scrapeGenericNumbers('https://receive-sms-online.info/Thailand/', 'rcv-online-TH') });
+
+            const seen = new Set();
+            let completed = 0;
+            const total = tasks.length;
+
+            // Run in batches of 6
+            const batchSize = 6;
+            for (let i = 0; i < tasks.length; i += batchSize) {
+                const batch = tasks.slice(i, i + batchSize);
+                const results = await Promise.allSettled(batch.map(async task => {
+                    try {
+                        return { name: task.name, nums: await task.fn() || [] };
+                    } catch (e) {
+                        console.error(`Scraper ${task.name} error:`, e);
+                        return { name: task.name, nums: [] };
+                    }
+                }));
+
+                for (const result of results) {
+                    completed++;
+                    if (result.status === 'fulfilled') {
+                        for (const n of result.value.nums) {
+                            if (!seen.has(n.number)) {
+                                seen.add(n.number);
+                                allNumbers.push(n);
+                            }
+                        }
+                    }
+                }
+
+                // Progressive UI update
+                const curFilter = document.querySelector('.filter-chip.active')?.dataset?.country || 'all';
+                filteredNumbers = curFilter === 'all' ? [...allNumbers] : allNumbers.filter(n => n.code === curFilter);
+                applySearchFilter();
+                updateCountryFilter();
+                document.getElementById('numberCount').textContent = filteredNumbers.length;
+                setStatus('loading', `\u0E42\u0E2B\u0E25\u0E14\u0E41\u0E25\u0E49\u0E27 ${allNumbers.length} \u0E40\u0E1A\u0E2D\u0E23\u0E4C... (${completed}/${total})`);
+            }
+
+            // Sort: Thai first, then by country
+            allNumbers.sort((a, b) => {
+                if (a.is_thai && !b.is_thai) return -1;
+                if (!a.is_thai && b.is_thai) return 1;
+                return a.country.localeCompare(b.country);
+            });
+
+            // Cache results
+            if (allNumbers.length > 0) {
+                numberCache.data = allNumbers;
+                numberCache.time = Date.now();
+            }
+
+            // Final render
+            const curFilter = document.querySelector('.filter-chip.active')?.dataset?.country || 'all';
+            filteredNumbers = curFilter === 'all' ? [...allNumbers] : allNumbers.filter(n => n.code === curFilter);
+            applySearchFilter();
+            updateCountryFilter();
+            document.getElementById('numberCount').textContent = filteredNumbers.length;
+
+            if (allNumbers.length > 0) {
+                setStatus('online', `\u0E1E\u0E23\u0E49\u0E2D\u0E21\u0E43\u0E0A\u0E49\u0E07\u0E32\u0E19 \u2022 ${allNumbers.length} \u0E40\u0E1A\u0E2D\u0E23\u0E4C`);
+            } else {
+                showNumbersEmpty([]);
+                setStatus('error', '\u0E44\u0E21\u0E48\u0E2A\u0E32\u0E21\u0E32\u0E23\u0E16\u0E42\u0E2B\u0E25\u0E14\u0E40\u0E1A\u0E2D\u0E23\u0E4C\u0E44\u0E14\u0E49');
+            }
+
+            updateLastUpdate();
+        }
+
+        async function refreshNumbers() {
+            const btn = document.getElementById('refreshBtn');
+            btn.disabled = true;
+            btn.classList.add('btn-loading');
+            btn.innerHTML = '<span class="sprite-icon ico-refresh"></span> \u0E01\u0E33\u0E25\u0E31\u0E07\u0E42\u0E2B\u0E25\u0E14...';
+
+            try {
+                numberCache.data = null;
+                numberCache.time = 0;
+                await loadAllNumbers();
+                showToast('\u2705 \u0E23\u0E35\u0E40\u0E1F\u0E23\u0E0A\u0E40\u0E23\u0E35\u0E22\u0E1A\u0E23\u0E49\u0E2D\u0E22', 'success');
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('btn-loading');
+                btn.innerHTML = '<span class="sprite-icon ico-refresh"></span> \u0E23\u0E35\u0E40\u0E1F\u0E23\u0E0A';
+            }
+        }
+
+        function renderNumbers(numbers) {
+            const container = document.getElementById('numbersList');
+
+            if (!numbers || numbers.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">\uD83D\uDCF5</div>
+                        <h3>\u0E44\u0E21\u0E48\u0E1E\u0E1A\u0E40\u0E1A\u0E2D\u0E23\u0E4C</h3>
+                        <p>\u0E25\u0E2D\u0E07\u0E40\u0E1B\u0E25\u0E35\u0E48\u0E22\u0E19\u0E15\u0E31\u0E27\u0E01\u0E23\u0E2D\u0E07\u0E2B\u0E23\u0E37\u0E2D\u0E01\u0E14\u0E23\u0E35\u0E40\u0E1F\u0E23\u0E0A</p>
+                    </div>`;
+                return;
+            }
+
+            const sorted = [...numbers].sort((a, b) => {
+                const pa = pinnedNumbers.has(a.id) ? 1 : 0;
+                const pb = pinnedNumbers.has(b.id) ? 1 : 0;
+                return pb - pa;
+            });
+
+            container.innerHTML = sorted.map((num, idx) => {
+                const isPinned = pinnedNumbers.has(num.id);
+                const flagHtml = num.flag_img
+                    ? `<img class="number-flag" src="${num.flag_img}" alt="${num.code}" loading="lazy">`
+                    : `<div class="number-flag-emoji">${num.flag}</div>`;
+                return `
+                <div class="number-card ${selectedNumber?.id === num.id ? 'active' : ''} ${isPinned ? 'pinned-card' : ''}"
+                     onclick="selectNumber(${numbers.indexOf(num)})" data-idx="${numbers.indexOf(num)}">
+                    ${flagHtml}
+                    <div class="number-info">
+                        <div class="number-phone">${formatPhone(num.number)}</div>
+                        <div class="number-meta">
+                            <span class="number-country">${num.country}</span>
+                            <span class="number-source">${num.source}</span>
+                        </div>
+                    </div>
+                    <button class="number-star ${isPinned ? 'pinned' : ''}"
+                            onclick="togglePin(event, '${num.id}')"
+                            title="${isPinned ? '\u0E40\u0E25\u0E34\u0E01\u0E1B\u0E31\u0E01\u0E2B\u0E21\u0E38\u0E14' : '\u0E1B\u0E31\u0E01\u0E2B\u0E21\u0E38\u0E14\u0E02\u0E36\u0E49\u0E19\u0E43\u0E19\u0E1F\u0E35\u0E14\u0E2B\u0E25\u0E31\u0E01'}" aria-pressed="${isPinned}">
+                        <span class="sprite-icon2 ${isPinned ? 'ico2-star-yellow' : 'ico2-star-black'}"></span>
+                    </button>
+                    <button class="number-copy" onclick="copyNumber(event, '${num.number}')" title="\u0E04\u0E31\u0E14\u0E25\u0E2D\u0E01">
+                        <span class="sprite-icon2 ico2-copy"></span>
+                    </button>
+                </div>`;
+            }).join('');
+        }
+
+        function showNumbersLoading() {
+            const container = document.getElementById('numbersList');
+            let html = '';
+            for (let i = 0; i < 8; i++) {
+                html += `
+                    <div class="skeleton-card">
+                        <div class="skeleton skeleton-circle"></div>
+                        <div style="flex:1;">
+                            <div class="skeleton skeleton-line w-60" style="margin-bottom:8px;height:16px;"></div>
+                            <div class="skeleton skeleton-line w-40" style="height:10px;"></div>
+                        </div>
+                    </div>`;
+            }
+            container.innerHTML = html;
+        }
+
+        function showNumbersEmpty(errors) {
+            const container = document.getElementById('numbersList');
+            const errorList = errors.length > 0
+                ? `<div style="margin-top:12px;text-align:left;font-size:11px;color:var(--red);max-width:300px;">
+                     ${errors.map(e => `\u2022 ${e}`).join('<br>')}
+                   </div>`
+                : '';
+
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="icon">\u26A0\uFE0F</div>
+                    <h3>\u0E44\u0E21\u0E48\u0E2A\u0E32\u0E21\u0E32\u0E23\u0E16\u0E42\u0E2B\u0E25\u0E14\u0E40\u0E1A\u0E2D\u0E23\u0E4C\u0E44\u0E14\u0E49</h3>
+                    <p>\u0E2D\u0E32\u0E08\u0E40\u0E01\u0E34\u0E14\u0E08\u0E32\u0E01\u0E40\u0E27\u0E47\u0E1A\u0E15\u0E49\u0E19\u0E17\u0E32\u0E07\u0E44\u0E21\u0E48\u0E15\u0E2D\u0E1A\u0E2A\u0E19\u0E2D\u0E07<br>\u0E25\u0E2D\u0E07\u0E01\u0E14\u0E23\u0E35\u0E40\u0E1F\u0E23\u0E0A\u0E2B\u0E23\u0E37\u0E2D\u0E43\u0E0A\u0E49\u0E1A\u0E23\u0E34\u0E01\u0E32\u0E23\u0E40\u0E2A\u0E23\u0E34\u0E21\u0E14\u0E49\u0E32\u0E19\u0E25\u0E48\u0E32\u0E07</p>
+                    ${errorList}
+                    <button class="btn btn-accent" style="margin-top:16px;" onclick="refreshNumbers()">
+                        \uD83D\uDD04 \u0E25\u0E2D\u0E07\u0E2D\u0E35\u0E01\u0E04\u0E23\u0E31\u0E49\u0E07
+                    </button>
+                </div>`;
+        }
+
+        // ==================== MESSAGES ====================
+        async function selectNumber(idx) {
+            const num = filteredNumbers[idx];
+            if (!num) return;
+
+            selectedNumber = num;
+
+            document.querySelectorAll('.number-card').forEach(c => c.classList.remove('active'));
+            document.querySelector(`.number-card[data-idx="${idx}"]`)?.classList.add('active');
+
+            document.getElementById('selectedNumberBar').style.display = 'flex';
+            const flagEl = document.getElementById('selectedFlag');
+            if (num.flag_img) {
+                flagEl.innerHTML = `<img class="flag" src="${num.flag_img}" alt="${num.code}" style="width:30px;height:30px;border-radius:4px;object-fit:contain;">`;
+            } else {
+                flagEl.innerHTML = `<span class="flag-emoji">${num.flag}</span>`;
+            }
+            document.getElementById('selectedPhone').textContent = formatPhone(num.number);
+            document.getElementById('selectedSource').textContent = num.source;
+            document.getElementById('refreshMsgBtn').style.display = 'inline-flex';
+
+            await loadMessages(num);
+
+            if (autoMsgRefreshInterval) clearInterval(autoMsgRefreshInterval);
+            if (isAutoRefresh) {
+                autoMsgRefreshInterval = setInterval(() => loadMessages(num), 15000);
+            }
+        }
+
+        async function loadMessages(num) {
+            const container = document.getElementById('messagesList');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="loading-spinner"></div>
+                    <h3>\u0E01\u0E33\u0E25\u0E31\u0E07\u0E42\u0E2B\u0E25\u0E14\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21...</h3>
+                </div>`;
+
+            const messages = await scrapeMessagesFromUrl(num.msg_url);
+
+            if (messages && messages.length > 0) {
+                renderMessages(messages);
+                document.getElementById('msgCount').textContent = messages.length;
+            } else {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">\uD83D\uDCED</div>
+                        <h3>\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E21\u0E35\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21</h3>
+                        <p>\u0E40\u0E1A\u0E2D\u0E23\u0E4C\u0E19\u0E35\u0E49\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E44\u0E14\u0E49\u0E23\u0E31\u0E1A SMS<br>\u0E2B\u0E23\u0E37\u0E2D\u0E2D\u0E32\u0E08\u0E22\u0E31\u0E07\u0E44\u0E21\u0E48\u0E21\u0E35\u0E02\u0E49\u0E2D\u0E04\u0E27\u0E32\u0E21\u0E43\u0E2B\u0E21\u0E48</p>
+                        <button class="btn btn-sm" style="margin-top:12px;" onclick="loadMessages(selectedNumber)">
+                            \uD83D\uDD04 \u0E42\u0E2B\u0E25\u0E14\u0E43\u0E2B\u0E21\u0E48
+                        </button>
+                    </div>`;
+                document.getElementById('msgCount').textContent = '0';
+            }
+        }
+
+        async function refreshMessages() {
+            if (!selectedNumber) return;
+            const btn = document.getElementById('refreshMsgBtn');
+            btn.disabled = true;
+            btn.classList.add('btn-loading');
+            btn.innerHTML = '<span class="sprite-icon ico-refresh"></span> \u0E01\u0E33\u0E25\u0E31\u0E07\u0E42\u0E2B\u0E25\u0E14...';
+
+            try {
+                // Clear message cache for this URL
+                const ck = `msg_${selectedNumber.msg_url}`;
+                delete msgCache[ck];
+                await loadMessages(selectedNumber);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('btn-loading');
+                btn.innerHTML = '<span class="sprite-icon ico-refresh"></span> \u0E23\u0E35\u0E40\u0E1F\u0E23\u0E0A';
+            }
+        }
+
+        function renderMessages(messages) {
+            const container = document.getElementById('messagesList');
+            container.innerHTML = messages.map(msg => `
+                <div class="msg-item">
+                    <div class="msg-header">
+                        <span class="msg-from">\uD83D\uDCDE ${escapeHtml(msg.from)}</span>
+                        <span class="msg-time">${escapeHtml(msg.time)}</span>
+                    </div>
+                    <div class="msg-text">${highlightCodes(escapeHtml(msg.text))}</div>
+                </div>
+            `).join('');
+        }
+
+        // ==================== COUNTRY FILTER ====================
+        function updateCountryFilter() {
+            const countries = {};
+            allNumbers.forEach(n => {
+                const key = n.code;
+                if (!countries[key]) {
+                    countries[key] = { flag: n.flag, name: n.country, code: n.code, count: 0 };
+                }
+                countries[key].count++;
+            });
+
+            const sorted = Object.values(countries).sort((a, b) => b.count - a.count);
+
+            const container = document.getElementById('countryFilter');
+            let html = `<button class="filter-chip active" data-country="all" onclick="filterCountry('all', this)"><span class="sprite-icon ico-globe"></span> \u0E17\u0E31\u0E49\u0E07\u0E2B\u0E21\u0E14 (${allNumbers.length})</button>`;
+
+            sorted.forEach(c => {
+                const flagSrc = allNumbers.find(n => n.code === c.code)?.flag_img;
+                const flagEl = flagSrc
+                    ? `<img class="filter-flag" src="${flagSrc}" alt="${c.code}">`
+                    : c.flag;
+                html += `<button class="filter-chip" data-country="${c.code}" onclick="filterCountry('${c.code}', this)">${flagEl} ${c.code} (${c.count})</button>`;
+            });
+
+            container.innerHTML = html;
+
+            if (typeof window.updateCountryFilterArrows === 'function') {
+                requestAnimationFrame(window.updateCountryFilterArrows);
+            }
+        }
+
+        function filterCountry(code, element) {
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+
+            if (code === 'all') {
+                filteredNumbers = [...allNumbers];
+            } else {
+                filteredNumbers = allNumbers.filter(n => n.code === code);
+            }
+
+            applySearchFilter();
+        }
+
+        // ==================== SEARCH ====================
+        const THAI_DIGIT_MAP = {
+            '\u0E50': '0', '\u0E51': '1', '\u0E52': '2', '\u0E53': '3', '\u0E54': '4',
+            '\u0E55': '5', '\u0E56': '6', '\u0E57': '7', '\u0E58': '8', '\u0E59': '9'
+        };
+
+        const COUNTRY_SEARCH_ALIASES = {
+            TH: ['thai', 'thailand', '\u0E44\u0E17\u0E22', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E44\u0E17\u0E22', '\u0E40\u0E1A\u0E2D\u0E23\u0E4C\u0E44\u0E17\u0E22'],
+            GB: ['uk', 'gb', 'united kingdom', 'britain', 'england', '\u0E2D\u0E31\u0E07\u0E01\u0E24\u0E29', '\u0E2A\u0E2B\u0E23\u0E32\u0E0A\u0E2D\u0E32\u0E13\u0E32\u0E08\u0E31\u0E01\u0E23', '\u0E1A\u0E23\u0E34\u0E40\u0E15\u0E19'],
+            US: ['us', 'usa', 'united states', 'america', '\u0E2D\u0E40\u0E21\u0E23\u0E34\u0E01\u0E32', '\u0E2A\u0E2B\u0E23\u0E31\u0E10', '\u0E2A\u0E2B\u0E23\u0E31\u0E10\u0E2D\u0E40\u0E21\u0E23\u0E34\u0E01\u0E32'],
+            CN: ['china', '\u0E08\u0E35\u0E19', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E08\u0E35\u0E19'],
+            JP: ['japan', '\u0E0D\u0E35\u0E48\u0E1B\u0E38\u0E48\u0E19', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E0D\u0E35\u0E48\u0E1B\u0E38\u0E48\u0E19'],
+            KR: ['korea', 'south korea', '\u0E40\u0E01\u0E32\u0E2B\u0E25\u0E35', '\u0E40\u0E01\u0E32\u0E2B\u0E25\u0E35\u0E43\u0E15\u0E49'],
+            IN: ['india', '\u0E2D\u0E34\u0E19\u0E40\u0E14\u0E35\u0E22', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E2D\u0E34\u0E19\u0E40\u0E14\u0E35\u0E22'],
+            RU: ['russia', '\u0E23\u0E31\u0E2A\u0E40\u0E0B\u0E35\u0E22', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E23\u0E31\u0E2A\u0E40\u0E0B\u0E35\u0E22'],
+            FR: ['france', '\u0E1D\u0E23\u0E31\u0E48\u0E07\u0E40\u0E28\u0E2A', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E1D\u0E23\u0E31\u0E48\u0E07\u0E40\u0E28\u0E2A'],
+            DE: ['germany', '\u0E40\u0E22\u0E2D\u0E23\u0E21\u0E31\u0E19', '\u0E40\u0E22\u0E2D\u0E23\u0E21\u0E19\u0E35'],
+            IT: ['italy', '\u0E2D\u0E34\u0E15\u0E32\u0E25\u0E35', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E2D\u0E34\u0E15\u0E32\u0E25\u0E35'],
+            ES: ['spain', '\u0E2A\u0E40\u0E1B\u0E19', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E2A\u0E40\u0E1B\u0E19'],
+            PT: ['portugal', '\u0E42\u0E1B\u0E23\u0E15\u0E38\u0E40\u0E01\u0E2A', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E42\u0E1B\u0E23\u0E15\u0E38\u0E40\u0E01\u0E2A'],
+            NL: ['netherlands', 'holland', '\u0E40\u0E19\u0E40\u0E18\u0E2D\u0E23\u0E4C\u0E41\u0E25\u0E19\u0E14\u0E4C', '\u0E2E\u0E2D\u0E25\u0E41\u0E25\u0E19\u0E14\u0E4C'],
+            BE: ['belgium', '\u0E40\u0E1A\u0E25\u0E40\u0E22\u0E35\u0E22\u0E21', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E40\u0E1A\u0E25\u0E40\u0E22\u0E35\u0E22\u0E21'],
+            CH: ['switzerland', '\u0E2A\u0E27\u0E34\u0E15\u0E40\u0E0B\u0E2D\u0E23\u0E4C\u0E41\u0E25\u0E19\u0E14\u0E4C', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E2A\u0E27\u0E34\u0E15\u0E40\u0E0B\u0E2D\u0E23\u0E4C\u0E41\u0E25\u0E19\u0E14\u0E4C'],
+            AT: ['austria', '\u0E2D\u0E2D\u0E2A\u0E40\u0E15\u0E23\u0E35\u0E22', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E2D\u0E2D\u0E2A\u0E40\u0E15\u0E23\u0E35\u0E22'],
+            SE: ['sweden', '\u0E2A\u0E27\u0E35\u0E40\u0E14\u0E19', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E2A\u0E27\u0E35\u0E40\u0E14\u0E19'],
+            NO: ['norway', '\u0E19\u0E2D\u0E23\u0E4C\u0E40\u0E27\u0E22\u0E4C', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E19\u0E2D\u0E23\u0E4C\u0E40\u0E27\u0E22\u0E4C'],
+            DK: ['denmark', '\u0E40\u0E14\u0E19\u0E21\u0E32\u0E23\u0E4C\u0E01', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E40\u0E14\u0E19\u0E21\u0E32\u0E23\u0E4C\u0E01'],
+            FI: ['finland', '\u0E1F\u0E34\u0E19\u0E41\u0E25\u0E19\u0E14\u0E4C', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E1F\u0E34\u0E19\u0E41\u0E25\u0E19\u0E14\u0E4C'],
+            PL: ['poland', '\u0E42\u0E1B\u0E41\u0E25\u0E19\u0E14\u0E4C', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E42\u0E1B\u0E41\u0E25\u0E19\u0E14\u0E4C'],
+            CZ: ['czech', 'czechia', '\u0E40\u0E0A\u0E47\u0E01', '\u0E40\u0E0A\u0E47\u0E01\u0E40\u0E01\u0E35\u0E22', '\u0E2A\u0E32\u0E18\u0E32\u0E23\u0E13\u0E23\u0E31\u0E10\u0E40\u0E0A\u0E47\u0E01'],
+            RO: ['romania', '\u0E42\u0E23\u0E21\u0E32\u0E40\u0E19\u0E35\u0E22', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E42\u0E23\u0E21\u0E32\u0E40\u0E19\u0E35\u0E22'],
+            UA: ['ukraine', '\u0E22\u0E39\u0E40\u0E04\u0E23\u0E19', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E22\u0E39\u0E40\u0E04\u0E23\u0E19'],
+            AU: ['australia', '\u0E2D\u0E2D\u0E2A\u0E40\u0E15\u0E23\u0E40\u0E25\u0E35\u0E22', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E2D\u0E2D\u0E2A\u0E40\u0E15\u0E23\u0E40\u0E25\u0E35\u0E22'],
+            NZ: ['new zealand', '\u0E19\u0E34\u0E27\u0E0B\u0E35\u0E41\u0E25\u0E19\u0E14\u0E4C', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E19\u0E34\u0E27\u0E0B\u0E35\u0E41\u0E25\u0E19\u0E14\u0E4C'],
+            CA: ['canada', '\u0E41\u0E04\u0E19\u0E32\u0E14\u0E32', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E41\u0E04\u0E19\u0E32\u0E14\u0E32'],
+            MX: ['mexico', '\u0E40\u0E21\u0E47\u0E01\u0E0B\u0E34\u0E42\u0E01', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E40\u0E21\u0E47\u0E01\u0E0B\u0E34\u0E42\u0E01'],
+            BR: ['brazil', '\u0E1A\u0E23\u0E32\u0E0B\u0E34\u0E25', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E1A\u0E23\u0E32\u0E0B\u0E34\u0E25'],
+            AR: ['argentina', '\u0E2D\u0E32\u0E23\u0E4C\u0E40\u0E08\u0E19\u0E15\u0E34\u0E19\u0E32', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E2D\u0E32\u0E23\u0E4C\u0E40\u0E08\u0E19\u0E15\u0E34\u0E19\u0E32'],
+            CL: ['chile', '\u0E0A\u0E34\u0E25\u0E35', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E0A\u0E34\u0E25\u0E35'],
+            CO: ['colombia', '\u0E42\u0E04\u0E25\u0E2D\u0E21\u0E40\u0E1A\u0E35\u0E22', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E42\u0E04\u0E25\u0E2D\u0E21\u0E40\u0E1A\u0E35\u0E22'],
+            PE: ['peru', '\u0E40\u0E1B\u0E23\u0E39', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E40\u0E1B\u0E23\u0E39'],
+            ZA: ['south africa', '\u0E41\u0E2D\u0E1F\u0E23\u0E34\u0E01\u0E32\u0E43\u0E15\u0E49', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E41\u0E2D\u0E1F\u0E23\u0E34\u0E01\u0E32\u0E43\u0E15\u0E49'],
+            NG: ['nigeria', '\u0E44\u0E19\u0E08\u0E35\u0E40\u0E23\u0E35\u0E22', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E44\u0E19\u0E08\u0E35\u0E40\u0E23\u0E35\u0E22'],
+            EG: ['egypt', '\u0E2D\u0E35\u0E22\u0E34\u0E1B\u0E15\u0E4C', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E2D\u0E35\u0E22\u0E34\u0E1B\u0E15\u0E4C'],
+            TR: ['turkey', 'turkiye', '\u0E15\u0E38\u0E23\u0E01\u0E35', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E15\u0E38\u0E23\u0E01\u0E35'],
+            AE: ['uae', 'united arab emirates', '\u0E14\u0E39\u0E44\u0E1A', '\u0E2A\u0E2B\u0E23\u0E31\u0E10\u0E2D\u0E32\u0E2B\u0E23\u0E31\u0E1A\u0E40\u0E2D\u0E21\u0E34\u0E40\u0E23\u0E15\u0E2A\u0E4C'],
+            SA: ['saudi', 'saudi arabia', '\u0E0B\u0E32\u0E2D\u0E38', '\u0E0B\u0E32\u0E2D\u0E38\u0E14\u0E35\u0E2D\u0E32\u0E23\u0E30\u0E40\u0E1A\u0E35\u0E22'],
+            IL: ['israel', '\u0E2D\u0E34\u0E2A\u0E23\u0E32\u0E40\u0E2D\u0E25', '\u0E1B\u0E23\u0E30\u0E40\u0E17\u0E28\u0E2D\u0E34\u0E2A\u0E23\u0E32\u0E40\u0E2D\u0E25'],
+            HK: ['hong kong', '\u0E2E\u0E48\u0E2D\u0E07\u0E01\u0E07'],
+            TW: ['taiwan', '\u0E44\u0E15\u0E49\u0E2B\u0E27\u0E31\u0E19'],
+            SG: ['singapore', '\u0E2A\u0E34\u0E07\u0E04\u0E42\u0E1B\u0E23\u0E4C'],
+            MY: ['malaysia', '\u0E21\u0E32\u0E40\u0E25\u0E40\u0E0B\u0E35\u0E22'],
+            ID: ['indonesia', '\u0E2D\u0E34\u0E19\u0E42\u0E14\u0E19\u0E35\u0E40\u0E0B\u0E35\u0E22'],
+            PH: ['philippines', '\u0E1F\u0E34\u0E25\u0E34\u0E1B\u0E1B\u0E34\u0E19\u0E2A\u0E4C'],
+            VN: ['vietnam', '\u0E40\u0E27\u0E35\u0E22\u0E14\u0E19\u0E32\u0E21'],
+            PK: ['pakistan', '\u0E1B\u0E32\u0E01\u0E34\u0E2A\u0E16\u0E32\u0E19'],
+            BD: ['bangladesh', '\u0E1A\u0E31\u0E07\u0E01\u0E25\u0E32\u0E40\u0E17\u0E28'],
+            LK: ['sri lanka', '\u0E28\u0E23\u0E35\u0E25\u0E31\u0E07\u0E01\u0E32'],
+            NP: ['nepal', '\u0E40\u0E19\u0E1B\u0E32\u0E25'],
+            MM: ['myanmar', 'burma', '\u0E1E\u0E21\u0E48\u0E32', '\u0E40\u0E21\u0E35\u0E22\u0E19\u0E21\u0E32'],
+            KH: ['cambodia', '\u0E01\u0E31\u0E21\u0E1E\u0E39\u0E0A\u0E32'],
+            LA: ['laos', '\u0E25\u0E32\u0E27']
+        };
+
+        function normalizeSearchText(text) {
+            return (text || '')
+                .toString()
+                .toLowerCase()
+                .replace(/[\u0E50-\u0E59]/g, ch => THAI_DIGIT_MAP[ch] || ch)
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function setupSearch() {
+            const input = document.getElementById('searchInput');
+            let debounce = null;
+            input.addEventListener('input', () => {
+                clearTimeout(debounce);
+                debounce = setTimeout(applySearchFilter, 200);
+            });
+        }
+
+        function applySearchFilter() {
+            const query = normalizeSearchText(document.getElementById('searchInput').value);
+
+            let results = filteredNumbers;
+
+            if (query) {
+                results = filteredNumbers.filter(n => {
+                    const numberNormalized = normalizeSearchText((n.number || '').replace(/[\s\-().]/g, ''));
+                    const countryNormalized = normalizeSearchText(n.country || '');
+                    const codeNormalized = normalizeSearchText(n.code || '');
+                    const sourceNormalized = normalizeSearchText(n.source || '');
+                    const aliases = COUNTRY_SEARCH_ALIASES[(n.code || '').toUpperCase()] || [];
+
+                    return numberNormalized.includes(query)
+                        || countryNormalized.includes(query)
+                        || codeNormalized.includes(query)
+                        || sourceNormalized.includes(query)
+                        || aliases.some(alias => normalizeSearchText(alias).includes(query));
+                });
+            }
+
+            renderNumbers(results);
+            document.getElementById('numberCount').textContent = results.length;
+        }
+
+        // ==================== AUTO REFRESH ====================
+        function setAutoRefresh(enabled, options = {}) {
+            const { silent = false } = options;
+            const btn = document.getElementById('autoRefreshBtn');
+
+            clearInterval(autoRefreshInterval);
+            clearInterval(autoMsgRefreshInterval);
+            autoRefreshInterval = null;
+            autoMsgRefreshInterval = null;
+
+            isAutoRefresh = enabled;
+
+            localStorage.setItem(AUTO_REFRESH_STORAGE_KEY, enabled ? '1' : '0');
+
+            if (enabled) {
+                btn.classList.add('active');
+                btn.innerHTML = '<span class="sprite-icon ico-bolt"></span> \u0E2D\u0E31\u0E15\u0E42\u0E19\u0E21\u0E31\u0E15\u0E34 ON';
+                autoRefreshInterval = setInterval(async () => {
+                    numberCache.data = null;
+                    numberCache.time = 0;
+                    await loadAllNumbers();
+                }, 60000);
+                if (selectedNumber) {
+                    autoMsgRefreshInterval = setInterval(() => loadMessages(selectedNumber), 15000);
+                }
+                if (!silent) showToast('\u26A1 \u0E40\u0E1B\u0E34\u0E14\u0E23\u0E35\u0E40\u0E1F\u0E23\u0E0A\u0E2D\u0E31\u0E15\u0E42\u0E19\u0E21\u0E31\u0E15\u0E34', 'success');
+            } else {
+                btn.classList.remove('active');
+                btn.innerHTML = '<span class="sprite-icon ico-bolt"></span> \u0E2D\u0E31\u0E15\u0E42\u0E19\u0E21\u0E31\u0E15\u0E34';
+                if (!silent) showToast('\u23F8\uFE0F \u0E1B\u0E34\u0E14\u0E23\u0E35\u0E40\u0E1F\u0E23\u0E0A\u0E2D\u0E31\u0E15\u0E42\u0E19\u0E21\u0E31\u0E15\u0E34', 'info');
+            }
+        }
+
+        function toggleAutoRefresh() {
+            setAutoRefresh(!isAutoRefresh);
+        }
+
+        // ==================== SERVICES ====================
+        function renderServices() {
+            const container = document.getElementById('servicesGrid');
+            container.innerHTML = FALLBACK_SERVICES.map(s => {
+                const flagImg = s.code ? getFlagImg(s.code) : '';
+                return `
+                    <a href="${s.url}" target="_blank" rel="noopener" class="service-card">
+                        <span class="arrow">\u2197</span>
+                        <div class="name service-name-row">
+                            ${flagImg
+                                ? `<img class="service-flag" src="${flagImg}" alt="${escapeHtml(s.code || '')}" loading="lazy">`
+                                : '<span class="service-flag-emoji">\uD83C\uDF10</span>'}
+                            <span>${escapeHtml(s.name)}</span>
+                        </div>
+                        <div class="desc">${escapeHtml(s.desc)}</div>
+                    </a>
+                `;
+            }).join('');
+        }
+
+        // ==================== CACHE ====================
+        async function clearCache() {
+            numberCache.data = null;
+            numberCache.time = 0;
+            Object.keys(msgCache).forEach(k => delete msgCache[k]);
+            showToast('\uD83D\uDDD1\uFE0F \u0E25\u0E49\u0E32\u0E07\u0E41\u0E04\u0E0A\u0E40\u0E23\u0E35\u0E22\u0E1A\u0E23\u0E49\u0E2D\u0E22', 'success');
+            await loadAllNumbers();
+        }
+
+        // ==================== UTILITIES ====================
+        function formatPhone(number) {
+            if (number.length > 10) {
+                const cc = number.match(/^(\+\d{1,4})/);
+                if (cc) {
+                    const rest = number.slice(cc[1].length);
+                    const parts = rest.match(/.{1,3}/g) || [rest];
+                    return cc[1] + ' ' + parts.join(' ');
+                }
+            }
+            return number;
+        }
+
+        function copyNumber(event, number) {
+            event.stopPropagation();
+            const btn = event.currentTarget;
+            navigator.clipboard.writeText(number).then(() => {
+                btn.classList.add('copied');
+                showToast(`\uD83D\uDCCB \u0E04\u0E31\u0E14\u0E25\u0E2D\u0E01 ${number} \u0E41\u0E25\u0E49\u0E27`, 'success');
+                setTimeout(() => btn.classList.remove('copied'), 1500);
+            }).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = number;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                btn.classList.add('copied');
+                showToast(`\uD83D\uDCCB \u0E04\u0E31\u0E14\u0E25\u0E2D\u0E01 ${number} \u0E41\u0E25\u0E49\u0E27`, 'success');
+                setTimeout(() => btn.classList.remove('copied'), 1500);
+            });
+        }
+
+        function togglePin(event, numId) {
+            event.stopPropagation();
+            const wasPinned = pinnedNumbers.has(numId);
+            if (wasPinned) {
+                pinnedNumbers.delete(numId);
+            } else {
+                pinnedNumbers.add(numId);
+            }
+            savePinnedNumbers();
+            applySearchFilter();
+            showToast(!wasPinned ? '\u2B50 \u0E1B\u0E31\u0E01\u0E2B\u0E21\u0E38\u0E14\u0E02\u0E36\u0E49\u0E19\u0E1F\u0E35\u0E14\u0E2B\u0E25\u0E31\u0E01\u0E41\u0E25\u0E49\u0E27' : '\u2606 \u0E40\u0E25\u0E34\u0E01\u0E1B\u0E31\u0E01\u0E2B\u0E21\u0E38\u0E14\u0E41\u0E25\u0E49\u0E27', 'info');
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function highlightCodes(text) {
+            return text.replace(/\b(\d{4,8})\b/g, '<span class="code-highlight">$1</span>');
+        }
+
+        function setStatus(type, text) {
+            const badge = document.getElementById('statusBadge');
+            badge.className = `status-badge ${type}`;
+            document.getElementById('statusText').textContent = text;
+        }
+
+        function updateLastUpdate() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('th-TH');
+            document.getElementById('lastUpdate').textContent = `\u0E2D\u0E31\u0E1B\u0E40\u0E14\u0E15\u0E25\u0E48\u0E32\u0E2A\u0E38\u0E14: ${timeStr}`;
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = message;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'toast-out 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    
+    </script>
+</body>
+</html>
